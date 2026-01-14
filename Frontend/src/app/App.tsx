@@ -1,12 +1,19 @@
-import { Calendar, TrendingUp, Lightbulb } from 'lucide-react';
+import { Calendar, TrendingUp, Lightbulb, LogOut } from 'lucide-react';
 import { AgendaCard } from '@/app/components/AgendaCard';
 import { ResponsibilityItem } from '@/app/components/ResponsibilityItem';
 import { StatusBadge } from '@/app/components/StatusBadge';
+import { useNavigate } from 'react-router-dom';
 
 function App() {
   // Mock data - semana atual
   const semanaAtual = 'Semana 2 - 13 a 17 de Janeiro 2026';
   const statusGeral: 'confirmado' | 'atenção' | 'pendente' = 'atenção';
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/');
+  };
 
   // Mock data - agenda
   const agenda = [
@@ -81,8 +88,20 @@ function App() {
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-12 px-6">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold mb-3">Sua agenda da semana</h1>
-          <p className="text-blue-100 text-lg mb-4">{semanaAtual}</p>
+          {/* Header com botão de logout */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1">
+              <h1 className="text-4xl font-bold mb-3">Sua agenda da semana</h1>
+              <p className="text-blue-100 text-lg mb-4">{semanaAtual}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all border border-white/20"
+            >
+              <LogOut size={18} />
+              <span className="text-sm font-medium">Sair</span>
+            </button>
+          </div>
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium">Status geral:</span>
             <StatusBadge status={statusGeral} />

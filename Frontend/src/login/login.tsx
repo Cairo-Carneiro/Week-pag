@@ -22,7 +22,21 @@ function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
+        <div 
+            className="min-h-screen flex items-center justify-center px-6"
+            style={{
+                background: 'linear-gradient(-45deg, #1e3a8a, #3b82f6, #60a5fa, #2563eb)',
+                backgroundSize: '400% 400%',
+                animation: 'gradient 15s ease infinite'
+            }}
+        >
+            <style>{`
+                @keyframes gradient {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+            `}</style>
             {/* Card de Login */}
             <div className="w-full max-w-md">
                 {/* Header com gradiente azul */}

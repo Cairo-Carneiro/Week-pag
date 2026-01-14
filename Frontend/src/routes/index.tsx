@@ -11,6 +11,7 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <App />,
     },
+    
 ]);
 
 export default router;
