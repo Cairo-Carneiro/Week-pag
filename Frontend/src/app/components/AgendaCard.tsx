@@ -1,5 +1,12 @@
-import { Calendar, Clock, MapPin, Users } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { StatusBadge } from './StatusBadge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/app/components/ui/dropdown-menu';
 
 type StatusType = 'confirmado' | 'atenção' | 'pendente';
 
@@ -17,9 +24,11 @@ interface AgendaItem {
 
 interface AgendaCardProps {
   item: AgendaItem;
+  onEdit?: (item: AgendaItem) => void;
+  onDelete?: (item: AgendaItem) => void;
 }
 
-export function AgendaCard({ item }: AgendaCardProps) {
+export function AgendaCard({ item, onEdit, onDelete }: AgendaCardProps) {
   const statusBorderColors = {
     confirmado: 'border-l-green-500',
     atenção: 'border-l-amber-500',
@@ -31,7 +40,7 @@ export function AgendaCard({ item }: AgendaCardProps) {
       className={`bg-white border border-gray-200 ${statusBorderColors[item.status]} border-l-4 rounded-lg p-5 hover:shadow-md transition-shadow`}
     >
       <div className="flex justify-between items-start mb-3">
-        <div>
+        <div className="flex-1">
           <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
             <Calendar size={14} />
             <span className="font-medium">{item.dia}</span>
@@ -40,7 +49,35 @@ export function AgendaCard({ item }: AgendaCardProps) {
           </div>
           <h3 className="text-lg font-semibold text-gray-900">{item.titulo}</h3>
         </div>
-        <StatusBadge status={item.status} size="sm" />
+        <div className="flex items-center gap-2">
+          <StatusBadge status={item.status} size="sm" />
+          {(onEdit || onDelete) && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1 hover:bg-gray-100 rounded transition-colors">
+                  <MoreVertical size={18} className="text-gray-600" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {onEdit && (
+                  <DropdownMenuItem onClick={() => onEdit(item)}>
+                    <Edit size={16} className="mr-2" />
+                    Editar
+                  </DropdownMenuItem>
+                )}
+                {onDelete && (
+                  <DropdownMenuItem
+                    onClick={() => onDelete(item)}
+                    className="text-red-600 focus:text-red-600"
+                  >
+                    <Trash2 size={16} className="mr-2" />
+                    Deletar
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2 text-sm text-gray-600">
