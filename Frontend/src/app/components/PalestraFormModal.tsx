@@ -114,7 +114,7 @@ export function PalestraFormModal({
             </label>
             <input
               type="text"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
               placeholder="Ex: Cultura e Valores da Empresa"
               {...register('titulo', { required: 'Título é obrigatório' })}
             />
@@ -133,7 +133,7 @@ export function PalestraFormModal({
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
                 placeholder="Ex: Segunda-feira"
                 {...register('dia', { required: 'Dia é obrigatório' })}
               />
@@ -150,7 +150,7 @@ export function PalestraFormModal({
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
                 placeholder="DD/MM"
                 {...register('data', { required: 'Data é obrigatória' })}
               />
@@ -169,7 +169,7 @@ export function PalestraFormModal({
             </label>
             <input
               type="text"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
               placeholder="Ex: 09:00 - 11:00"
               {...register('horario', { required: 'Horário é obrigatório' })}
             />
@@ -187,7 +187,7 @@ export function PalestraFormModal({
             </label>
             <input
               type="text"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
               placeholder="Ex: Auditório Principal - 3º andar"
               {...register('local', { required: 'Local é obrigatório' })}
             />
@@ -205,7 +205,7 @@ export function PalestraFormModal({
             </label>
             <input
               type="text"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
               placeholder="Ex: Novos colaboradores"
               {...register('publico', { required: 'Público é obrigatório' })}
             />
@@ -222,7 +222,7 @@ export function PalestraFormModal({
               Status *
             </label>
             <select
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
               {...register('status', { required: 'Status é obrigatório' })}
             >
               <option value="confirmado">Confirmado</option>
@@ -242,7 +242,7 @@ export function PalestraFormModal({
               Observações
             </label>
             <textarea
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 min-h-[80px]"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 min-h-[80px]"
               placeholder="Observações adicionais (opcional)"
               {...register('observacao')}
             />
@@ -259,7 +259,7 @@ export function PalestraFormModal({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all flex items-center gap-2"
               disabled={loading}
             >
               {loading && <LoadingSpinner size="sm" />}

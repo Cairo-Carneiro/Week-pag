@@ -41,7 +41,7 @@ export function ResponsibilityForm() {
     return (
       <button
         onClick={() => setIsExpanded(true)}
-        className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-gray-600 hover:text-blue-600"
+        className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition-all text-gray-600 hover:text-emerald-600"
       >
         <Plus size={20} />
         <span className="font-medium">Adicionar Responsabilidade</span>
@@ -57,7 +57,7 @@ export function ResponsibilityForm() {
       <div>
         <input
           type="text"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
           placeholder="Descreva a responsabilidade..."
           autoFocus
           {...register('texto', { required: 'Texto é obrigatório' })}
@@ -73,7 +73,7 @@ export function ResponsibilityForm() {
         <input
           type="checkbox"
           id="critico"
-          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-600"
+          className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-600"
           {...register('critico')}
         />
         <label htmlFor="critico" className="text-sm text-gray-700">
@@ -84,7 +84,7 @@ export function ResponsibilityForm() {
       <div className="flex gap-2">
         <button
           type="submit"
-          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          className="flex-1 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all font-medium"
         >
           Adicionar
         </button>

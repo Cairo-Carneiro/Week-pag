@@ -86,7 +86,25 @@ export interface Usuario {
   id: string;
   nome: string;
   email: string;
+  perfil?: 'Facilitador' | 'Gestor' | 'Administrador';
   role?: 'admin' | 'presenter' | 'viewer';
+}
+
+/**
+ * EventoOnboarding model
+ * Represents an onboarding event shown on the initial landing page
+ */
+export interface EventoOnboarding {
+  id: string;
+  horario: string;          // Time range (e.g., "09:00 – 10:30")
+  local: string;            // Location/room
+  tipo: string;             // Event type (e.g., "Novos Colaboradores")
+  participante: string;     // Participant name
+  data?: string;            // Optional date
+  coordenadas?: {           // Optional map coordinates
+    lat: number;
+    lng: number;
+  };
 }
 
 // ============================================

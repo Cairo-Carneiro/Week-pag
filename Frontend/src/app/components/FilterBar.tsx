@@ -52,7 +52,7 @@ export function FilterBar() {
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           placeholder="Buscar por título, local ou público..."
-          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
         />
         {searchInput && (
           <button
@@ -75,7 +75,7 @@ export function FilterBar() {
           onClick={() => handleStatusChange('todos')}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             filters.status === 'todos'
-              ? 'bg-blue-600 text-white'
+              ? 'bg-emerald-600 text-white'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
         >

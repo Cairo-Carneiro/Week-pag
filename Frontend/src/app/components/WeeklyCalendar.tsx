@@ -106,13 +106,12 @@ export function WeeklyCalendar({ palestras, onPalestraClick }: WeeklyCalendarPro
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
       {/* Calendar Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <CalendarIcon size={24} />
-            <div>
-              <h3 className="text-lg font-semibold">Calendário Semanal</h3>
-              <p className="text-sm text-blue-100">{weekRangeString}</p>
+      <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <h3 className="text-xl font-bold">Calendário Semanal</h3>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-emerald-100">{weekRangeString}</p>
             </div>
           </div>
           
@@ -154,7 +153,7 @@ export function WeeklyCalendar({ palestras, onPalestraClick }: WeeklyCalendarPro
               {/* Day Header */}
               <div
                 className={`p-3 border-b border-gray-200 ${
-                  day.isToday ? 'bg-blue-50' : 'bg-gray-50'
+                  day.isToday ? 'bg-emerald-50' : 'bg-gray-50'
                 }`}
               >
                 <div className="text-center">
@@ -164,7 +163,7 @@ export function WeeklyCalendar({ palestras, onPalestraClick }: WeeklyCalendarPro
                   <div
                     className={`mt-1 text-lg font-bold ${
                       day.isToday
-                        ? 'text-blue-600'
+                        ? 'text-emerald-600'
                         : 'text-gray-900'
                     }`}
                   >

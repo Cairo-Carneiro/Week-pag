@@ -1,4 +1,4 @@
-/**
+ /**
  * Responsibility Store (Zustand)
  * Global state management for responsabilidades
  * Connects UI components with responsibility service

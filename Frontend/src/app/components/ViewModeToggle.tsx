@@ -16,7 +16,7 @@ export function ViewModeToggle() {
         onClick={() => setViewMode('list')}
         className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
           viewMode === 'list'
-            ? 'bg-blue-600 text-white'
+            ? 'bg-emerald-600 text-white'
             : 'text-gray-700 hover:bg-gray-100'
         }`}
         title="Visualização em lista"
@@ -29,7 +29,7 @@ export function ViewModeToggle() {
         onClick={() => setViewMode('calendar-week')}
         className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
           viewMode === 'calendar-week'
-            ? 'bg-blue-600 text-white'
+            ? 'bg-emerald-600 text-white'
             : 'text-gray-700 hover:bg-gray-100'
         }`}
         title="Calendário semanal"

@@ -150,13 +150,13 @@ function App() {
 
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-12 px-6">
+        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-12 px-6">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
                 <h1 className="text-4xl font-bold mb-3">Sua agenda da semana</h1>
-                <p className="text-blue-100 text-lg mb-4">
+                <p className="text-emerald-100 text-lg mb-4">
                   Semana 2 - 13 a 17 de Janeiro 2026
                 </p>
               </div>
@@ -183,14 +183,14 @@ function App() {
           <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <Calendar size={28} className="text-blue-600" />
+                <Calendar size={28} className="text-emerald-600" />
                 <h2 className="text-3xl font-bold text-gray-900">Suas palestras</h2>
               </div>
               <div className="flex items-center gap-3">
                 <ViewModeToggle />
                 <button
                   onClick={handleCreatePalestra}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all font-medium shadow-sm"
                 >
                   <Plus size={20} />
                   Nova Palestra
@@ -280,7 +280,7 @@ function App() {
                       key={index}
                       className="flex gap-3 p-4 bg-white border border-gray-200 rounded-lg"
                     >
-                      <Icon size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                      <Icon size={20} className="text-emerald-600 flex-shrink-0 mt-0.5" />
                       <div>
                         <h3 className="font-semibold text-gray-900 text-sm mb-1">
                           {orientacao.titulo}
@@ -302,12 +302,12 @@ function App() {
             <div className="flex items-center gap-6">
               <div className="flex-1">
                 <div className="flex items-end gap-2 mb-2">
-                  <span className="text-4xl font-bold text-blue-600">{avaliacaoNota}</span>
+                  <span className="text-4xl font-bold text-emerald-600">{avaliacaoNota}</span>
                   <span className="text-lg text-gray-500 mb-1">/ {avaliacaoTotal}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
                   <div
-                    className="bg-blue-600 h-3 rounded-full transition-all"
+                    className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-3 rounded-full transition-all"
                     style={{ width: `${percentualEficacia}%` }}
                   />
                 </div>
@@ -315,8 +315,8 @@ function App() {
                   Baseado no feedback dos últimos 3 meses
                 </p>
               </div>
-              <div className="text-center px-6 py-4 bg-blue-50 rounded-lg">
-                <div className="text-3xl font-bold text-blue-600">
+              <div className="text-center px-6 py-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg">
+                <div className="text-3xl font-bold text-emerald-600">
                   {percentualEficacia.toFixed(0)}%
                 </div>
                 <div className="text-sm text-gray-600 mt-1">Aprovação</div>

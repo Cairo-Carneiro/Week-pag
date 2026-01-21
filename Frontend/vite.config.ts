@@ -10,6 +10,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    host: true, // Permite acesso de outros dispositivos na rede
+    port: 5173,
+  },
   resolve: {
     alias: {
       // Alias @ to the src directory
