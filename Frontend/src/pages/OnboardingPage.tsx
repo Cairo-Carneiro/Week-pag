@@ -1,45 +1,25 @@
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Lightbulb } from 'lucide-react';
-import { useState } from 'react';
-import { EventoOnboarding } from '@/types/types';
-
+import { MapPin, Clock, Users, BookOpen, Settings } from 'lucide-react';
+import { EventoAgenda } from '@/types/types';
+import { mockEventosAgenda } from '@/data/mockEventosAgenda';
 
 function OnboardingPage() {
   const navigate = useNavigate();
-  const [selectedView, setSelectedView] = useState<'hoje' | 'semana'>('hoje');
 
   // Mock data - será substituído pela integração do backend
-  const eventos: EventoOnboarding[] = [
-    {
-      id: '1',
-      horario: '09:00 – 10:30',
-      local: 'Sala Azul – Prédio A',
-      tipo: 'Novos Colaboradores',
-      participante: 'Maria Silva'
-    },
-    {
-      id: '2',
-      horario: '11:00 – 12:00',
-      local: 'Auditório Central',
-      tipo: 'Estagiários',
-      participante: 'João Pereira'
-    }
-  ];
+  // Filtrando eventos do dia 23/01/2026 (data mockada)
+  const eventos: EventoAgenda[] = mockEventosAgenda.filter(e => e.data === '23/01/2026');
 
   const handleEventoClick = (eventoId: string) => {
-    // Aqui você pode passar o ID do evento selecionado via state ou context
-    // Por enquanto, apenas redireciona para o dashboard
-    navigate('/dashboard', { state: { eventoId } });
+    navigate(`/evento/${eventoId}`);
   };
 
+  const handleAdminClick = () => {
+    navigate('/admin');
+  };
 
   // Formatar data atual
-  const hoje = new Date();
-  const dataFormatada = hoje.toLocaleDateString('pt-BR', { 
-    day: '2-digit', 
-    month: '2-digit', 
-    year: 'numeric' 
-  });
+  const dataFormatada = '23/01/2026'; // Mock - será dinâmico com backend
 
   return (
     <div 
@@ -59,95 +39,110 @@ function OnboardingPage() {
       `}</style>
 
       {/* Container com Scroll */}
-      <div className="w-full max-w-2xl h-[90vh] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+      <div className="w-full max-w-4xl h-[90vh] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         
         {/* Conteúdo com Scroll */}
         <div className="flex-1 overflow-y-auto px-6 py-8">
           
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Agenda de Onboarding
-            </h1>
-            <p className="text-lg text-gray-700 mb-1">
-              Olá! Aqui está sua agenda
-            </p>
-            <p className="text-sm font-medium text-gray-800">
-              Perfil: Facilitador
-            </p>
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  Agenda de Onboarding
+                </h1>
+                <p className="text-lg text-gray-700 mb-1">
+                  Olá! Aqui está sua agenda de hoje
+                </p>
+                <p className="text-sm font-medium text-gray-800">
+                  Perfil: Facilitador
+                </p>
+              </div>
+              <button
+                onClick={handleAdminClick}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                title="Painel Administrativo"
+              >
+                <Settings size={18} />
+                <span className="text-sm font-medium">Admin</span>
+              </button>
+            </div>
           </div>
 
-          {/* Data e Navegação */}
+          {/* Data */}
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Hoje – {dataFormatada}
             </h2>
-            
-            <div className="flex gap-3 mb-6">
-              <button
-                className="px-6 py-2.5 bg-white border-2 border-emerald-300 text-emerald-700 font-medium rounded-lg hover:bg-emerald-50 transition-colors shadow-sm"
-              >
-                Ver minha agenda
-              </button>
-              <div className="flex border-2 border-emerald-300 rounded-lg overflow-hidden bg-white shadow-sm">
-                <button
-                  onClick={() => setSelectedView('hoje')}
-                  className={`px-5 py-2.5 font-medium transition-colors ${
-                    selectedView === 'hoje'
-                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-emerald-50'
-                  }`}
-                >
-                  Hoje
-                </button>
-                <div className="w-px bg-emerald-300" />
-                <button
-                  onClick={() => setSelectedView('semana')}
-                  className={`px-5 py-2.5 font-medium transition-colors ${
-                    selectedView === 'semana'
-                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-emerald-50'
-                  }`}
-                >
-                  Seman
-                </button>
-              </div>
-            </div>
+            <p className="text-gray-600">
+              {eventos.length} {eventos.length === 1 ? 'evento agendado' : 'eventos agendados'}
+            </p>
           </div>
 
-          {/* Cards de Eventos */}
+          {/* Timeline de Eventos */}
           <div className="space-y-4 mb-6">
-            {eventos.map((evento) => (
+            {eventos.map((evento, index) => (
               <div
                 key={evento.id}
                 onClick={() => handleEventoClick(evento.id)}
-                className="bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-xl p-5 cursor-pointer hover:border-emerald-400 hover:shadow-lg transition-all"
+                className="bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-xl p-5 cursor-pointer hover:border-emerald-400 hover:shadow-lg transition-all relative"
               >
-                <div className="mb-3">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    {evento.horario}
-                  </h3>
-                  <p className="text-base text-gray-700 font-medium mb-1">
-                    {evento.local}
-                  </p>
-                  <p className="text-base text-gray-700 mb-1">
-                    {evento.tipo}
-                  </p>
-                  <p className="text-base text-gray-900 font-semibold">
-                    {evento.participante}
-                  </p>
-                </div>
+                {/* Timeline indicator */}
+                {index < eventos.length - 1 && (
+                  <div className="absolute left-8 top-full w-0.5 h-4 bg-emerald-200" />
+                )}
                 
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    console.log('Abrir mapa para:', evento.local);
-                  }}
-                  className="flex items-center gap-2 text-gray-600 hover:text-emerald-600 transition-colors"
-                >
-                  <MapPin size={18} />
-                  <span className="text-sm font-medium">Abrir no mapa</span>
-                </button>
+                <div className="flex gap-4">
+                  {/* Time Badge */}
+                  <div className="flex-shrink-0">
+                    <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white px-4 py-2 rounded-lg text-center min-w-[100px]">
+                      <div className="flex items-center justify-center gap-1 mb-1">
+                        <Clock size={14} />
+                        <span className="text-xs font-medium">Horário</span>
+                      </div>
+                      <div className="text-sm font-bold">{evento.horario}</div>
+                    </div>
+                  </div>
+
+                  {/* Event Info */}
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      {evento.assunto}
+                    </h3>
+                    
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Users size={16} />
+                        <span className="text-sm">{evento.facilitador}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <MapPin size={16} />
+                        <span className="text-sm">{evento.local}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Users size={16} />
+                        <span className="text-sm">{evento.publicoAlvo}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <BookOpen size={16} />
+                        <span className="text-sm">{evento.cargaHoraria}h</span>
+                      </div>
+                    </div>
+
+                    {evento.descricao && (
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {evento.descricao}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Status Badge */}
+                  <div className="flex-shrink-0">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                      Agendado
+                    </span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -155,13 +150,13 @@ function OnboardingPage() {
           {/* Dica de Performance */}
           <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-5 shadow-sm">
             <div className="flex gap-3">
-              <Lightbulb size={24} className="text-emerald-600 flex-shrink-0 mt-0.5" />
+              <BookOpen size={24} className="text-emerald-600 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-bold text-gray-900 text-base mb-2">
                   Dica de performance
                 </h3>
                 <p className="text-sm text-gray-700 leading-relaxed">
-                  Comece a palestra com uma pergunta para gerar engajamento
+                  Comece a palestra com uma pergunta para gerar engajamento e interação com os participantes
                 </p>
               </div>
             </div>

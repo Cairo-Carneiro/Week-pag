@@ -87,7 +87,28 @@ export interface Usuario {
   nome: string;
   email: string;
   perfil?: 'Facilitador' | 'Gestor' | 'Administrador';
-  role?: 'admin' | 'presenter' | 'viewer';
+  role: 'admin' | 'facilitador' | 'participante';
+}
+
+/**
+ * EventoAgenda model
+ * Represents a scheduled event in the daily onboarding agenda (based on Excel)
+ */
+export interface EventoAgenda {
+  id: string;
+  data: string;              // Date in format "DD/MM/YYYY"
+  horario: string;           // Time range (e.g., "09:00 - 10:00")
+  assunto: string;           // Subject/title of the event
+  facilitador: string;       // Facilitator name
+  local: string;             // Location/room
+  publicoAlvo: string;       // Target audience
+  cargaHoraria: number;      // Duration in hours
+  descricao?: string;        // Optional detailed description
+  materialApoio?: string[];  // Optional support materials (links)
+  status?: 'agendado' | 'em_andamento' | 'concluido';
+  presencaConfirmada?: boolean;
+  createdAt?: string;        // ISO timestamp of creation
+  updatedAt?: string;        // ISO timestamp of last update
 }
 
 /**
