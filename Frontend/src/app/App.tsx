@@ -3,31 +3,31 @@
  * Fully functional dashboard with CRUD operations
  */
 
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, TrendingUp, Lightbulb, LogOut, Plus } from 'lucide-react';
-import { Toaster } from 'sonner';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Calendar, TrendingUp, Lightbulb, LogOut, Plus } from "lucide-react";
+import { Toaster } from "sonner";
 
 // Stores
-import { usePalestraStore, useResponsibilityStore } from '@/stores';
+import { usePalestraStore, useResponsibilityStore } from "@/stores";
 
 // Components
-import { AgendaCard } from '@/app/components/AgendaCard';
-import { ResponsibilityItem } from '@/app/components/ResponsibilityItem';
-import { StatusBadge } from '@/app/components/StatusBadge';
-import { PalestraFormModal } from '@/app/components/PalestraFormModal';
-import { DeleteConfirmDialog } from '@/app/components/DeleteConfirmDialog';
-import { ResponsibilityForm } from '@/app/components/ResponsibilityForm';
-import { FilterBar } from '@/app/components/FilterBar';
-import { ViewModeToggle } from '@/app/components/ViewModeToggle';
-import { ThemeToggle } from '@/app/components/ThemeToggle';
-import { LoadingSpinner } from '@/app/components/LoadingSpinner';
-import { EmptyState } from '@/app/components/EmptyState';
-import { WeeklyCalendar } from '@/app/components/WeeklyCalendar';
+import { AgendaCard } from "@/app/components/AgendaCard";
+import { ResponsibilityItem } from "@/app/components/ResponsibilityItem";
+import { StatusBadge } from "@/app/components/StatusBadge";
+import { PalestraFormModal } from "@/app/components/PalestraFormModal";
+import { DeleteConfirmDialog } from "@/app/components/DeleteConfirmDialog";
+import { ResponsibilityForm } from "@/app/components/ResponsibilityForm";
+import { FilterBar } from "@/app/components/FilterBar";
+import { ViewModeToggle } from "@/app/components/ViewModeToggle";
+import { ThemeToggle } from "@/app/components/ThemeToggle";
+import { LoadingSpinner } from "@/app/components/LoadingSpinner";
+import { EmptyState } from "@/app/components/EmptyState";
+import { WeeklyCalendar } from "@/app/components/WeeklyCalendar";
 
 // Utils
-import { showSuccess, showError } from '@/utils/toast';
-import { Palestra } from '@/types/types';
+import { showSuccess, showError } from "@/utils/toast";
+import { Palestra } from "@/types/types";
 
 function App() {
   const navigate = useNavigate();
@@ -55,7 +55,9 @@ function App() {
   // Modal states
   const [isPalestraModalOpen, setIsPalestraModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [palestraToDelete, setPalestraToDelete] = useState<Palestra | null>(null);
+  const [palestraToDelete, setPalestraToDelete] = useState<Palestra | null>(
+    null,
+  );
 
   // Load data on mount
   useEffect(() => {
@@ -65,7 +67,7 @@ function App() {
 
   // Handlers
   const handleLogout = () => {
-    navigate('/');
+    navigate("/");
   };
 
   const handleCreatePalestra = () => {
@@ -87,9 +89,9 @@ function App() {
     if (palestraToDelete) {
       const success = await deletePalestra(palestraToDelete.id);
       if (success) {
-        showSuccess('Palestra deletada!', 'A palestra foi removida da agenda.');
+        showSuccess("Palestra deletada!", "A palestra foi removida da agenda.");
       } else {
-        showError('Erro ao deletar', 'Não foi possível deletar a palestra.');
+        showError("Erro ao deletar", "Não foi possível deletar a palestra.");
       }
       setIsDeleteDialogOpen(false);
       setPalestraToDelete(null);
@@ -103,38 +105,41 @@ function App() {
   const handleDeleteResponsibility = async (id: string) => {
     const success = await deleteResponsabilidade(id);
     if (success) {
-      showSuccess('Responsabilidade removida!');
+      showSuccess("Responsabilidade removida!");
     } else {
-      showError('Erro ao remover responsabilidade');
+      showError("Erro ao remover responsabilidade");
     }
   };
 
   // Calculate overall status
-  const getOverallStatus = (): 'confirmado' | 'atenção' | 'pendente' => {
-    const pendenteCount = palestras.filter((p) => p.status === 'pendente').length;
-    const atençãoCount = palestras.filter((p) => p.status === 'atenção').length;
-    
-    if (pendenteCount > 0) return 'pendente';
-    if (atençãoCount > 0) return 'atenção';
-    return 'confirmado';
+  const getOverallStatus = (): "confirmado" | "atenção" | "pendente" => {
+    const pendenteCount = palestras.filter(
+      (p) => p.status === "pendente",
+    ).length;
+    const atençãoCount = palestras.filter((p) => p.status === "atenção").length;
+
+    if (pendenteCount > 0) return "pendente";
+    if (atençãoCount > 0) return "atenção";
+    return "confirmado";
   };
 
   // Mock data - orientações
   const orientacoes = [
     {
       icone: Lightbulb,
-      titulo: 'Chegue com antecedência',
-      texto: 'Recomendamos chegar 15 minutos antes para testar equipamentos',
+      titulo: "Chegue com antecedência",
+      texto: "Recomendamos chegar 15 minutos antes para testar equipamentos",
     },
     {
       icone: Calendar,
-      titulo: 'Material de apoio',
-      texto: 'Disponibilize os slides no sistema até 1 dia antes da palestra',
+      titulo: "Material de apoio",
+      texto: "Disponibilize os slides no sistema até 1 dia antes da palestra",
     },
     {
       icone: TrendingUp,
-      titulo: 'Feedback é essencial',
-      texto: 'Ao final, colete feedback dos participantes para melhorias contínuas',
+      titulo: "Feedback é essencial",
+      texto:
+        "Ao final, colete feedback dos participantes para melhorias contínuas",
     },
   ];
 
@@ -155,7 +160,9 @@ function App() {
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
-                <h1 className="text-4xl font-bold mb-3">Sua agenda da semana</h1>
+                <h1 className="text-4xl font-bold mb-3">
+                  Sua agenda da semana
+                </h1>
                 <p className="text-emerald-100 text-lg mb-4">
                   Semana 2 - 13 a 17 de Janeiro 2026
                 </p>
@@ -184,7 +191,9 @@ function App() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <Calendar size={28} className="text-emerald-600" />
-                <h2 className="text-3xl font-bold text-gray-900">Suas palestras</h2>
+                <h2 className="text-3xl font-bold text-gray-900">
+                  Suas palestras
+                </h2>
               </div>
               <div className="flex items-center gap-3">
                 <ViewModeToggle />
@@ -199,7 +208,7 @@ function App() {
             </div>
 
             {/* Filter Bar - Only show in list view */}
-            {viewMode === 'list' && (
+            {viewMode === "list" && (
               <div className="mb-6">
                 <FilterBar />
               </div>
@@ -216,11 +225,11 @@ function App() {
                 title="Nenhuma palestra encontrada"
                 description="Adicione uma nova palestra para começar a organizar sua agenda."
                 action={{
-                  label: 'Criar Primeira Palestra',
+                  label: "Criar Primeira Palestra",
                   onClick: handleCreatePalestra,
                 }}
               />
-            ) : viewMode === 'calendar-week' ? (
+            ) : viewMode === "calendar-week" ? (
               <WeeklyCalendar
                 palestras={palestras}
                 onPalestraClick={handleEditPalestra}
@@ -280,12 +289,17 @@ function App() {
                       key={index}
                       className="flex gap-3 p-4 bg-white border border-gray-200 rounded-lg"
                     >
-                      <Icon size={20} className="text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <Icon
+                        size={20}
+                        className="text-emerald-600 flex-shrink-0 mt-0.5"
+                      />
                       <div>
                         <h3 className="font-semibold text-gray-900 text-sm mb-1">
                           {orientacao.titulo}
                         </h3>
-                        <p className="text-sm text-gray-600">{orientacao.texto}</p>
+                        <p className="text-sm text-gray-600">
+                          {orientacao.texto}
+                        </p>
                       </div>
                     </div>
                   );
@@ -302,8 +316,12 @@ function App() {
             <div className="flex items-center gap-6">
               <div className="flex-1">
                 <div className="flex items-end gap-2 mb-2">
-                  <span className="text-4xl font-bold text-emerald-600">{avaliacaoNota}</span>
-                  <span className="text-lg text-gray-500 mb-1">/ {avaliacaoTotal}</span>
+                  <span className="text-4xl font-bold text-emerald-600">
+                    {avaliacaoNota}
+                  </span>
+                  <span className="text-lg text-gray-500 mb-1">
+                    / {avaliacaoTotal}
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
                   <div

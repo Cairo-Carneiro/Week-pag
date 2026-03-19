@@ -1,210 +1,130 @@
 /**
- * Responsibility Service (Mock Implementation)
- * Simulates API calls for CRUD operations on responsabilidades
- * Uses localStorage for data persistence
- * 
- * When backend is ready, replace this with real API calls
+ * Responsibility Service — Integração com API Real
+ *
+ * ANTES: usava localStorage + dados mock
+ * AGORA: faz chamadas HTTP reais para o backend Express
+ *
+ * Endpoints utilizados:
+ *   GET    /api/responsabilidades
+ *   GET    /api/responsabilidades/:id
+ *   POST   /api/responsabilidades
+ *   PUT    /api/responsabilidades/:id   (atualizar / toggle)
+ *   DELETE /api/responsabilidades/:id
  */
 
 import { Responsabilidade, ResponsibilidadeFormData } from '../types/types';
-import { mockResponsabilidades } from '../data/mockData';
-import { saveToStorage, loadFromStorage, STORAGE_KEYS } from '../utils/localStorage';
-
-// Simulated network delay (in milliseconds)
-const MOCK_DELAY = 200;
-
-/**
- * Helper: Simulate async operation with delay
- */
-const delay = (ms: number = MOCK_DELAY): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
-/**
- * Helper: Generate unique ID
- */
-const generateId = (): string => {
-  return `r-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-};
-
-/**
- * Helper: Get responsabilidades from storage or use mock data
- */
-const getResponsabilidadesFromStorage = (): Responsabilidade[] => {
-  const stored = loadFromStorage<Responsabilidade[]>(STORAGE_KEYS.RESPONSABILIDADES);
-  if (stored && stored.length > 0) {
-    return stored;
-  }
-  // First time: save mock data to storage
-  saveToStorage(STORAGE_KEYS.RESPONSABILIDADES, mockResponsabilidades);
-  return mockResponsabilidades;
-};
-
-/**
- * Helper: Save responsabilidades to storage
- */
-const saveResponsabilidadesToStorage = (responsabilidades: Responsabilidade[]): void => {
-  saveToStorage(STORAGE_KEYS.RESPONSABILIDADES, responsabilidades);
-};
+import { apiGet, apiPost, apiPut, apiPatch, apiDelete } from './api';
 
 // ============================================
-// SERVICE METHODS
+// MÉTODOS DO SERVICE
 // ============================================
 
 /**
- * Get all responsabilidades
- * @returns Promise with array of all responsabilidades
+ * Busca todas as responsabilidades do banco de dados.
+ * Endpoint: GET /api/responsabilidades
  */
 export const getAll = async (): Promise<Responsabilidade[]> => {
-  await delay();
-  return getResponsabilidadesFromStorage();
+  const response = await apiGet<Responsabilidade[]>('/api/responsabilidades');
+  return response.data || [];
 };
 
 /**
- * Get responsabilidade by ID
- * @param id - Responsabilidade ID
- * @returns Promise with responsabilidade or null if not found
+ * Busca uma responsabilidade específica pelo ID.
+ * Endpoint: GET /api/responsabilidades/:id
  */
 export const getById = async (id: string): Promise<Responsabilidade | null> => {
-  await delay();
-  const responsabilidades = getResponsabilidadesFromStorage();
-  return responsabilidades.find((r) => r.id === id) || null;
-};
-
-/**
- * Create new responsabilidade
- * @param data - Responsabilidade form data
- * @returns Promise with created responsabilidade
- */
-export const create = async (data: ResponsibilidadeFormData): Promise<Responsabilidade> => {
-  await delay();
-  
-  const newResponsabilidade: Responsabilidade = {
-    ...data,
-    id: generateId(),
-    completo: false,
-    createdAt: new Date().toISOString(),
-  };
-  
-  const responsabilidades = getResponsabilidadesFromStorage();
-  responsabilidades.push(newResponsabilidade);
-  saveResponsabilidadesToStorage(responsabilidades);
-  
-  return newResponsabilidade;
-};
-
-/**
- * Toggle complete status of responsabilidade
- * @param id - Responsabilidade ID
- * @returns Promise with updated responsabilidade or null if not found
- */
-export const toggleComplete = async (id: string): Promise<Responsabilidade | null> => {
-  await delay();
-  
-  const responsabilidades = getResponsabilidadesFromStorage();
-  const index = responsabilidades.findIndex((r) => r.id === id);
-  
-  if (index === -1) {
+  try {
+    const response = await apiGet<Responsabilidade>(`/api/responsabilidades/${id}`);
+    return response.data || null;
+  } catch {
     return null;
   }
-  
-  responsabilidades[index] = {
-    ...responsabilidades[index],
-    completo: !responsabilidades[index].completo,
-  };
-  
-  saveResponsabilidadesToStorage(responsabilidades);
-  return responsabilidades[index];
 };
 
 /**
- * Update responsabilidade
- * @param id - Responsabilidade ID
- * @param data - Updated data
- * @returns Promise with updated responsabilidade or null if not found
+ * Cria uma nova responsabilidade.
+ * O campo "completo" sempre começa como false — o backend já define o default.
+ * Endpoint: POST /api/responsabilidades
+ */
+export const create = async (data: ResponsibilidadeFormData): Promise<Responsabilidade> => {
+  const response = await apiPost<Responsabilidade>('/api/responsabilidades', data);
+
+  if (!response.data) {
+    throw new Error('Erro ao criar responsabilidade: resposta inválida do servidor');
+  }
+
+  return response.data;
+};
+
+/**
+ * Alterna o campo "completo" de uma responsabilidade (true → false → true).
+ *
+ * COMO FUNCIONA:
+ * O backend tem um endpoint dedicado só para isso: PATCH /:id/toggle
+ * Ele busca o valor atual e inverte automaticamente — mais eficiente!
+ *
+ * Endpoint: PATCH /api/responsabilidades/:id/toggle
+ */
+export const toggleComplete = async (id: string): Promise<Responsabilidade | null> => {
+  try {
+    // O backend cuida de tudo — apenas mandamos a requisição PATCH
+    const response = await apiPatch<Responsabilidade>(`/api/responsabilidades/${id}/toggle`);
+    return response.data || null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Atualiza qualquer campo de uma responsabilidade.
+ * Endpoint: PUT /api/responsabilidades/:id
  */
 export const update = async (
   id: string,
   data: Partial<Omit<Responsabilidade, 'id' | 'createdAt'>>
 ): Promise<Responsabilidade | null> => {
-  await delay();
-  
-  const responsabilidades = getResponsabilidadesFromStorage();
-  const index = responsabilidades.findIndex((r) => r.id === id);
-  
-  if (index === -1) {
+  try {
+    const response = await apiPut<Responsabilidade>(`/api/responsabilidades/${id}`, data);
+    return response.data || null;
+  } catch {
     return null;
   }
-  
-  responsabilidades[index] = {
-    ...responsabilidades[index],
-    ...data,
-  };
-  
-  saveResponsabilidadesToStorage(responsabilidades);
-  return responsabilidades[index];
 };
 
 /**
- * Delete responsabilidade
- * @param id - Responsabilidade ID
- * @returns Promise with boolean indicating success
+ * Deleta uma responsabilidade pelo ID.
+ * Endpoint: DELETE /api/responsabilidades/:id
  */
 export const deleteResponsabilidade = async (id: string): Promise<boolean> => {
-  await delay();
-  
-  const responsabilidades = getResponsabilidadesFromStorage();
-  const filtered = responsabilidades.filter((r) => r.id !== id);
-  
-  if (filtered.length === responsabilidades.length) {
-    return false; // Not found
+  try {
+    await apiDelete(`/api/responsabilidades/${id}`);
+    return true;
+  } catch {
+    return false;
   }
-  
-  saveResponsabilidadesToStorage(filtered);
-  return true;
 };
 
 /**
- * Get only incomplete responsabilidades
- * @returns Promise with array of incomplete responsabilidades
+ * Busca apenas as responsabilidades não concluídas.
+ * Endpoint: GET /api/responsabilidades?completo=false
  */
 export const getIncomplete = async (): Promise<Responsabilidade[]> => {
-  await delay();
-  const responsabilidades = getResponsabilidadesFromStorage();
-  return responsabilidades.filter((r) => !r.completo);
+  const response = await apiGet<Responsabilidade[]>('/api/responsabilidades?completo=false');
+  return response.data || [];
 };
 
 /**
- * Get only complete responsabilidades
- * @returns Promise with array of complete responsabilidades
- */
-export const getComplete = async (): Promise<Responsabilidade[]> => {
-  await delay();
-  const responsabilidades = getResponsabilidadesFromStorage();
-  return responsabilidades.filter((r) => r.completo);
-};
-
-/**
- * Get critical responsabilidades
- * @returns Promise with array of critical responsabilidades
+ * Busca apenas as responsabilidades críticas e não concluídas.
+ * Endpoint: GET /api/responsabilidades?critico=true
  */
 export const getCritical = async (): Promise<Responsabilidade[]> => {
-  await delay();
-  const responsabilidades = getResponsabilidadesFromStorage();
-  return responsabilidades.filter((r) => r.critico && !r.completo);
+  const response = await apiGet<Responsabilidade[]>(
+    '/api/responsabilidades?critico=true&completo=false'
+  );
+  return response.data || [];
 };
 
-/**
- * Reset to initial mock data
- * @returns Promise with boolean indicating success
- */
-export const resetToMockData = async (): Promise<boolean> => {
-  await delay();
-  saveResponsabilidadesToStorage(mockResponsabilidades);
-  return true;
-};
-
-// Export all methods as default object (alternative usage)
+// Export padrão (compatível com o uso atual)
 export default {
   getAll,
   getById,
@@ -213,7 +133,5 @@ export default {
   update,
   delete: deleteResponsabilidade,
   getIncomplete,
-  getComplete,
   getCritical,
-  resetToMockData,
 };

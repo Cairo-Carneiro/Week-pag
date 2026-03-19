@@ -1,224 +1,176 @@
 /**
- * Palestra Service (Mock Implementation)
- * Simulates API calls for CRUD operations on palestras
- * Uses localStorage for data persistence
- * 
- * When backend is ready, replace this with real API calls
+ * Palestra Service — Integração com API Real
+ *
+ * ANTES: usava localStorage + dados mock
+ * AGORA: faz chamadas HTTP reais para o backend Express
+ *
+ * CONCEITO IMPORTANTE:
+ * Este arquivo só sabe fazer chamadas HTTP e retornar dados.
+ * Ele NÃO guarda estado (quem faz isso é a Store do Zustand).
+ * Os componentes React NUNCA importam este arquivo diretamente —
+ * eles sempre passam pela Store.
  */
 
 import { Palestra, PalestraFormData, PalestraFilters } from '../types/types';
-import { mockPalestras } from '../data/mockData';
-import { saveToStorage, loadFromStorage, STORAGE_KEYS } from '../utils/localStorage';
-
-// Simulated network delay (in milliseconds)
-const MOCK_DELAY = 300;
-
-/**
- * Helper: Simulate async operation with delay
- */
-const delay = (ms: number = MOCK_DELAY): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
-/**
- * Helper: Generate unique ID
- */
-const generateId = (): string => {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-};
-
-/**
- * Helper: Get palestras from storage or use mock data
- */
-const getPalestrasFromStorage = (): Palestra[] => {
-  const stored = loadFromStorage<Palestra[]>(STORAGE_KEYS.PALESTRAS);
-  if (stored && stored.length > 0) {
-    return stored;
-  }
-  // First time: save mock data to storage
-  saveToStorage(STORAGE_KEYS.PALESTRAS, mockPalestras);
-  return mockPalestras;
-};
-
-/**
- * Helper: Save palestras to storage
- */
-const savePalestrasToStorage = (palestras: Palestra[]): void => {
-  saveToStorage(STORAGE_KEYS.PALESTRAS, palestras);
-};
+import { apiGet, apiPost, apiPut, apiDelete } from './api';
 
 // ============================================
-// SERVICE METHODS
+// TIPOS LOCAIS
 // ============================================
 
 /**
- * Get all palestras
- * @returns Promise with array of all palestras
+ * O backend usa "atencao" (sem acento) — limitação do enum do Prisma.
+ * O frontend usa "atenção" (com acento) — definido em types.ts.
+ * Esse tipo representa o que vem do banco de dados.
+ */
+type PalestraBackend = Omit<Palestra, 'status'> & {
+  status: 'confirmado' | 'atencao' | 'pendente';
+};
+
+// ============================================
+// HELPERS DE CONVERSÃO
+// ============================================
+
+/**
+ * Converte o status do formato do backend para o formato do frontend.
+ * "atencao" → "atenção"
+ */
+const toFrontend = (p: PalestraBackend): Palestra => ({
+  ...p,
+  status: p.status === 'atencao' ? 'atenção' : p.status,
+});
+
+/**
+ * Converte o status do frontend para o formato do backend antes de enviar.
+ * "atenção" → "atencao"
+ */
+const toBackend = (status: Palestra['status']): PalestraBackend['status'] => {
+  return status === 'atenção' ? 'atencao' : status;
+};
+
+// ============================================
+// MÉTODOS DO SERVICE
+// ============================================
+
+/**
+ * Busca todas as palestras do banco de dados.
+ * Endpoint: GET /api/palestras
  */
 export const getAll = async (): Promise<Palestra[]> => {
-  await delay();
-  return getPalestrasFromStorage();
+  const response = await apiGet<PalestraBackend[]>('/api/palestras');
+  return (response.data || []).map(toFrontend);
 };
 
 /**
- * Get palestra by ID
- * @param id - Palestra ID
- * @returns Promise with palestra or null if not found
+ * Busca uma palestra específica pelo ID.
+ * Endpoint: GET /api/palestras/:id
  */
 export const getById = async (id: string): Promise<Palestra | null> => {
-  await delay();
-  const palestras = getPalestrasFromStorage();
-  return palestras.find((p) => p.id === id) || null;
-};
-
-/**
- * Create new palestra
- * @param data - Palestra form data (without id)
- * @returns Promise with created palestra
- */
-export const create = async (data: PalestraFormData): Promise<Palestra> => {
-  await delay();
-  
-  const newPalestra: Palestra = {
-    ...data,
-    id: generateId(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-  
-  const palestras = getPalestrasFromStorage();
-  palestras.push(newPalestra);
-  savePalestrasToStorage(palestras);
-  
-  return newPalestra;
-};
-
-/**
- * Update existing palestra
- * @param id - Palestra ID
- * @param data - Updated palestra data
- * @returns Promise with updated palestra or null if not found
- */
-export const update = async (id: string, data: Partial<PalestraFormData>): Promise<Palestra | null> => {
-  await delay();
-  
-  const palestras = getPalestrasFromStorage();
-  const index = palestras.findIndex((p) => p.id === id);
-  
-  if (index === -1) {
+  try {
+    const response = await apiGet<PalestraBackend>(`/api/palestras/${id}`);
+    return response.data ? toFrontend(response.data) : null;
+  } catch {
     return null;
   }
-  
-  palestras[index] = {
-    ...palestras[index],
-    ...data,
-    updatedAt: new Date().toISOString(),
-  };
-  
-  savePalestrasToStorage(palestras);
-  return palestras[index];
 };
 
 /**
- * Delete palestra
- * @param id - Palestra ID
- * @returns Promise with boolean indicating success
+ * Cria uma nova palestra no banco de dados.
+ * Endpoint: POST /api/palestras
+ */
+export const create = async (data: PalestraFormData): Promise<Palestra> => {
+  const payload = { ...data, status: toBackend(data.status) };
+  const response = await apiPost<PalestraBackend>('/api/palestras', payload);
+
+  if (!response.data) {
+    throw new Error('Erro ao criar palestra: resposta inválida do servidor');
+  }
+
+  return toFrontend(response.data);
+};
+
+/**
+ * Atualiza uma palestra existente.
+ * Endpoint: PUT /api/palestras/:id
+ */
+export const update = async (
+  id: string,
+  data: Partial<PalestraFormData>
+): Promise<Palestra | null> => {
+  try {
+    const payload = data.status
+      ? { ...data, status: toBackend(data.status) }
+      : data;
+    const response = await apiPut<PalestraBackend>(`/api/palestras/${id}`, payload);
+    return response.data ? toFrontend(response.data) : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Deleta uma palestra pelo ID.
+ * Endpoint: DELETE /api/palestras/:id
  */
 export const deletePalestra = async (id: string): Promise<boolean> => {
-  await delay();
-  
-  const palestras = getPalestrasFromStorage();
-  const filtered = palestras.filter((p) => p.id !== id);
-  
-  if (filtered.length === palestras.length) {
-    return false; // Not found
+  try {
+    await apiDelete(`/api/palestras/${id}`);
+    return true;
+  } catch {
+    return false;
   }
-  
-  savePalestrasToStorage(filtered);
-  return true;
 };
 
 /**
- * Filter palestras by criteria
- * @param filters - Filter options
- * @returns Promise with filtered palestras
+ * Filtra palestras por status, busca ou data.
+ * Endpoint: GET /api/palestras/filter?status=&searchQuery=
  */
 export const filterPalestras = async (filters: PalestraFilters): Promise<Palestra[]> => {
-  await delay();
-  
-  let palestras = getPalestrasFromStorage();
-  
-  // Filter by status
+  const params = new URLSearchParams();
+
   if (filters.status && filters.status !== 'todos') {
-    palestras = palestras.filter((p) => p.status === filters.status);
+    params.set('status', toBackend(filters.status as Palestra['status']));
   }
-  
-  // Filter by search query (title)
-  if (filters.searchQuery && filters.searchQuery.trim() !== '') {
-    const query = filters.searchQuery.toLowerCase();
-    palestras = palestras.filter((p) =>
-      p.titulo.toLowerCase().includes(query)
-    );
+  if (filters.searchQuery) {
+    params.set('searchQuery', filters.searchQuery);
   }
-  
-  // Filter by date range (simplified - comparing DD/MM format)
   if (filters.dataInicio) {
-    palestras = palestras.filter((p) => p.data >= filters.dataInicio!);
+    params.set('dataInicio', filters.dataInicio);
   }
-  
   if (filters.dataFim) {
-    palestras = palestras.filter((p) => p.data <= filters.dataFim!);
+    params.set('dataFim', filters.dataFim);
   }
-  
-  return palestras;
+
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const response = await apiGet<PalestraBackend[]>(`/api/palestras/filter${query}`);
+  return (response.data || []).map(toFrontend);
 };
 
 /**
- * Search palestras by title
- * @param query - Search query
- * @returns Promise with matching palestras
+ * Busca palestras pelo título (ou local/público).
+ * Endpoint: GET /api/palestras/search?query=
  */
 export const searchByTitle = async (query: string): Promise<Palestra[]> => {
-  await delay();
-  
-  if (!query || query.trim() === '') {
-    return getPalestrasFromStorage();
-  }
-  
-  const palestras = getPalestrasFromStorage();
-  const lowerQuery = query.toLowerCase();
-  
-  return palestras.filter((p) =>
-    p.titulo.toLowerCase().includes(lowerQuery) ||
-    p.local.toLowerCase().includes(lowerQuery) ||
-    p.publico.toLowerCase().includes(lowerQuery)
+  if (!query.trim()) return getAll();
+  const response = await apiGet<PalestraBackend[]>(
+    `/api/palestras/search?query=${encodeURIComponent(query)}`
   );
+  return (response.data || []).map(toFrontend);
 };
 
 /**
- * Get palestras by status
- * @param status - Status type
- * @returns Promise with palestras of given status
+ * Busca palestras por status específico.
+ * Endpoint: GET /api/palestras/status/:status
  */
 export const getByStatus = async (status: Palestra['status']): Promise<Palestra[]> => {
-  await delay();
-  
-  const palestras = getPalestrasFromStorage();
-  return palestras.filter((p) => p.status === status);
+  const backendStatus = toBackend(status);
+  const response = await apiGet<PalestraBackend[]>(
+    `/api/palestras/status/${backendStatus}`
+  );
+  return (response.data || []).map(toFrontend);
 };
 
-/**
- * Reset to initial mock data
- * Useful for testing/demo purposes
- * @returns Promise with boolean indicating success
- */
-export const resetToMockData = async (): Promise<boolean> => {
-  await delay();
-  savePalestrasToStorage(mockPalestras);
-  return true;
-};
-
-// Export all methods as default object (alternative usage)
+// Export padrão (compatível com o uso atual)
 export default {
   getAll,
   getById,
@@ -228,5 +180,4 @@ export default {
   filter: filterPalestras,
   searchByTitle,
   getByStatus,
-  resetToMockData,
 };

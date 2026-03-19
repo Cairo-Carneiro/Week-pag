@@ -15,7 +15,7 @@ function OnboardingPage() {
   };
 
   const handleAdminClick = () => {
-    navigate('/admin');
+    navigate('/login');
   };
 
   // Formatar data atual
