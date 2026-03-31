@@ -1,36 +1,56 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, Users, BookOpen, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { usePalestraStore } from '@/stores/usePalestraStore';
 
 function EventoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [presencaConfirmada, setPresencaConfirmada] = useState(false);
+  const [presencaLocal, setPresencaLocal] = useState(false);
 
-  // Mock data - será substituído pela integração do backend
-  const evento = {
-    id: id || '1',
-    data: '23/01/2026',
-    horario: '09:00 - 10:00',
-    assunto: 'Boas-vindas e Cultura Organizacional',
-    facilitador: 'Maria Silva',
-    local: 'Auditório Principal - Prédio A',
-    publicoAlvo: 'Novos Colaboradores',
-    cargaHoraria: 1,
-    descricao: 'Sessão de boas-vindas aos novos colaboradores, apresentando a cultura, valores e missão da empresa. Momento de integração e esclarecimento de dúvidas.',
-    materialApoio: [
-      'Apresentação - Cultura Organizacional.pdf',
-      'Manual do Colaborador.pdf'
-    ],
-    status: 'agendado' as const,
-    presencaConfirmada: false
-  };
+  const { selectedPalestra: palestra, loading, error, fetchPalestraById } = usePalestraStore();
+
+  useEffect(() => {
+    if (id) {
+      fetchPalestraById(id);
+    }
+  }, [id, fetchPalestraById]);
 
   const handleConfirmarPresenca = () => {
-    setPresencaConfirmada(true);
-    // Aqui será a chamada para o backend
-    console.log('Presença confirmada para evento:', id);
+    setPresencaLocal(true);
+    // TODO: Futuramente, chamar updatePalestra para salvar no backend
+    console.log('Presença confirmada para palestra:', id);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-xl font-bold text-gray-500 animate-pulse">
+          Carregando detalhes...
+        </p>
+      </div>
+    );
+  }
+
+  if (error || !palestra) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <p className="text-xl font-bold text-red-500 mb-4">
+            {error || 'Palestra não encontrada'}
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            className="text-emerald-600 hover:underline"
+          >
+            Voltar para Agenda
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const isPresencaConfirmada = presencaLocal || palestra.presencaConfirmada;
 
   return (
     <div 
@@ -62,17 +82,17 @@ function EventoDetailPage() {
           </button>
           
           <h1 className="text-3xl font-bold text-white mb-2">
-            {evento.assunto}
+            {palestra.titulo}
           </h1>
           
           <div className="flex flex-wrap gap-4 text-emerald-50">
             <div className="flex items-center gap-2">
               <Clock size={18} />
-              <span>{evento.horario}</span>
+              <span>{palestra.horario}</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin size={18} />
-              <span>{evento.local}</span>
+              <span>{palestra.local}</span>
             </div>
           </div>
         </div>
@@ -87,7 +107,7 @@ function EventoDetailPage() {
                 <Users size={18} />
                 <span className="font-semibold">Facilitador</span>
               </div>
-              <p className="text-gray-900 font-medium">{evento.facilitador}</p>
+              <p className="text-gray-900 font-medium">{palestra.facilitador || 'Não definido'}</p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4">
@@ -95,7 +115,7 @@ function EventoDetailPage() {
                 <Users size={18} />
                 <span className="font-semibold">Público-Alvo</span>
               </div>
-              <p className="text-gray-900 font-medium">{evento.publicoAlvo}</p>
+              <p className="text-gray-900 font-medium">{palestra.publico}</p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4">
@@ -103,7 +123,7 @@ function EventoDetailPage() {
                 <Clock size={18} />
                 <span className="font-semibold">Carga Horária</span>
               </div>
-              <p className="text-gray-900 font-medium">{evento.cargaHoraria}h</p>
+              <p className="text-gray-900 font-medium">{palestra.cargaHoraria || 0}h</p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4">
@@ -111,34 +131,15 @@ function EventoDetailPage() {
                 <BookOpen size={18} />
                 <span className="font-semibold">Data</span>
               </div>
-              <p className="text-gray-900 font-medium">{evento.data}</p>
+              <p className="text-gray-900 font-medium">{palestra.data}</p>
             </div>
           </div>
 
           {/* Descrição */}
-          {evento.descricao && (
+          {palestra.descricao && (
             <div>
               <h2 className="text-xl font-bold text-gray-900 mb-3">Descrição</h2>
-              <p className="text-gray-700 leading-relaxed">{evento.descricao}</p>
-            </div>
-          )}
-
-          {/* Material de Apoio */}
-          {evento.materialApoio && evento.materialApoio.length > 0 && (
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-3">Material de Apoio</h2>
-              <div className="space-y-2">
-                {evento.materialApoio.map((material, index) => (
-                  <a
-                    key={index}
-                    href="#"
-                    className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 hover:underline"
-                  >
-                    <BookOpen size={16} />
-                    <span>{material}</span>
-                  </a>
-                ))}
-              </div>
+              <p className="text-gray-700 leading-relaxed">{palestra.descricao}</p>
             </div>
           )}
 
@@ -146,15 +147,15 @@ function EventoDetailPage() {
           <div className="flex flex-wrap gap-4 pt-4 border-t">
             <button
               onClick={handleConfirmarPresenca}
-              disabled={presencaConfirmada}
+              disabled={isPresencaConfirmada}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors ${
-                presencaConfirmada
+                isPresencaConfirmada
                   ? 'bg-green-100 text-green-700 cursor-not-allowed'
                   : 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700'
               }`}
             >
               <CheckCircle size={20} />
-              <span>{presencaConfirmada ? 'Presença Confirmada' : 'Confirmar Presença'}</span>
+              <span>{isPresencaConfirmada ? 'Presença Confirmada' : 'Confirmar Presença'}</span>
             </button>
 
             <button

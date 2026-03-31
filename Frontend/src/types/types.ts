@@ -43,6 +43,12 @@ export interface Palestra {
   observacao?: string;      // Optional notes/observations
   createdAt?: string;       // ISO timestamp of creation
   updatedAt?: string;       // ISO timestamp of last update
+  facilitador?: string;
+  cargaHoraria?: number;
+  descricao?: string;
+  presencaConfirmada?: boolean;
+  tipo?: string;
+  participante?: string;
 }
 
 /**
@@ -90,43 +96,7 @@ export interface Usuario {
   role: 'admin' | 'facilitador' | 'participante';
 }
 
-/**
- * EventoAgenda model
- * Represents a scheduled event in the daily onboarding agenda (based on Excel)
- */
-export interface EventoAgenda {
-  id: string;
-  data: string;              // Date in format "DD/MM/YYYY"
-  horario: string;           // Time range (e.g., "09:00 - 10:00")
-  assunto: string;           // Subject/title of the event
-  facilitador: string;       // Facilitator name
-  local: string;             // Location/room
-  publicoAlvo: string;       // Target audience
-  cargaHoraria: number;      // Duration in hours
-  descricao?: string;        // Optional detailed description
-  materialApoio?: string[];  // Optional support materials (links)
-  status?: 'agendado' | 'em_andamento' | 'concluido';
-  presencaConfirmada?: boolean;
-  createdAt?: string;        // ISO timestamp of creation
-  updatedAt?: string;        // ISO timestamp of last update
-}
 
-/**
- * EventoOnboarding model
- * Represents an onboarding event shown on the initial landing page
- */
-export interface EventoOnboarding {
-  id: string;
-  horario: string;          // Time range (e.g., "09:00 – 10:30")
-  local: string;            // Location/room
-  tipo: string;             // Event type (e.g., "Novos Colaboradores")
-  participante: string;     // Participant name
-  data?: string;            // Optional date
-  coordenadas?: {           // Optional map coordinates
-    lat: number;
-    lng: number;
-  };
-}
 
 // ============================================
 // FILTER & SEARCH TYPES

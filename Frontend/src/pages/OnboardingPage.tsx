@@ -1,33 +1,49 @@
-import { useNavigate } from 'react-router-dom';
-import { MapPin, Clock, Users, BookOpen, Settings } from 'lucide-react';
-import { EventoAgenda } from '@/types/types';
-import { mockEventosAgenda } from '@/data/mockEventosAgenda';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Clock, MapPin, Users, BookOpen, Settings } from "lucide-react";
+import { usePalestraStore } from "@/stores/usePalestraStore";
 
 function OnboardingPage() {
   const navigate = useNavigate();
 
-  // Mock data - será substituído pela integração do backend
-  // Filtrando eventos do dia 23/01/2026 (data mockada)
-  const eventos: EventoAgenda[] = mockEventosAgenda.filter(e => e.data === '23/01/2026');
+  const { palestras, loading, error, fetchPalestras } = usePalestraStore();
 
-  const handleEventoClick = (eventoId: string) => {
-    navigate(`/evento/${eventoId}`);
+  useEffect(() => {
+    fetchPalestras();
+  }, [fetchPalestras]);
+  const handlePalestraClick = (palestraId: string) => {
+    navigate(`/evento/${palestraId}`);
   };
 
   const handleAdminClick = () => {
-    navigate('/login');
+    navigate("/login");
   };
 
-  // Formatar data atual
-  const dataFormatada = '23/01/2026'; // Mock - será dinâmico com backend
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-x1 font-bold text-gray-500 animate-pulse">
+          Carregando agenda...
+        </p>
+      </div>
+    );
+  }
 
+  if (error) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-x1 font-bold text-red-500">{error}</p>
+      </div>
+    );
+  }
   return (
-    <div 
+    <div
       className="h-screen flex items-center justify-center p-4"
       style={{
-        background: 'linear-gradient(-45deg, #d1fae5, #a7f3d0, #6ee7b7, #34d399)',
-        backgroundSize: '400% 400%',
-        animation: 'gradient 15s ease infinite'
+        background:
+          "linear-gradient(-45deg, #d1fae5, #a7f3d0, #6ee7b7, #34d399)",
+        backgroundSize: "400% 400%",
+        animation: "gradient 15s ease infinite",
       }}
     >
       <style>{`
@@ -40,10 +56,8 @@ function OnboardingPage() {
 
       {/* Container com Scroll */}
       <div className="w-full max-w-4xl h-[90vh] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden flex flex-col">
-        
         {/* Conteúdo com Scroll */}
         <div className="flex-1 overflow-y-auto px-6 py-8">
-          
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-start justify-between mb-4">
@@ -69,29 +83,30 @@ function OnboardingPage() {
             </div>
           </div>
 
-          {/* Data */}
+          {/* Contagem */}
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Hoje – {dataFormatada}
+              Palestras Agendadas
             </h2>
             <p className="text-gray-600">
-              {eventos.length} {eventos.length === 1 ? 'evento agendado' : 'eventos agendados'}
+              {palestras.length}{" "}
+              {palestras.length === 1 ? "palestra agendada" : "palestras agendadas"}
             </p>
           </div>
 
           {/* Timeline de Eventos */}
           <div className="space-y-4 mb-6">
-            {eventos.map((evento, index) => (
+            {palestras.map((palestra, index) => (
               <div
-                key={evento.id}
-                onClick={() => handleEventoClick(evento.id)}
+                key={palestra.id}
+                onClick={() => handlePalestraClick(palestra.id)}
                 className="bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-xl p-5 cursor-pointer hover:border-emerald-400 hover:shadow-lg transition-all relative"
               >
                 {/* Timeline indicator */}
-                {index < eventos.length - 1 && (
+                {index < palestras.length - 1 && (
                   <div className="absolute left-8 top-full w-0.5 h-4 bg-emerald-200" />
                 )}
-                
+
                 <div className="flex gap-4">
                   {/* Time Badge */}
                   <div className="flex-shrink-0">
@@ -100,38 +115,38 @@ function OnboardingPage() {
                         <Clock size={14} />
                         <span className="text-xs font-medium">Horário</span>
                       </div>
-                      <div className="text-sm font-bold">{evento.horario}</div>
+                      <div className="text-sm font-bold">{palestra.horario}</div>
                     </div>
                   </div>
 
                   {/* Event Info */}
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      {evento.assunto}
+                      {palestra.titulo}
                     </h3>
-                    
+
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <div className="flex items-center gap-2 text-gray-600">
                         <Users size={16} />
-                        <span className="text-sm">{evento.facilitador}</span>
+                        <span className="text-sm">{palestra.facilitador}</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <MapPin size={16} />
-                        <span className="text-sm">{evento.local}</span>
+                        <span className="text-sm">{palestra.local}</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <Users size={16} />
-                        <span className="text-sm">{evento.publicoAlvo}</span>
+                        <span className="text-sm">{palestra.publico}</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <BookOpen size={16} />
-                        <span className="text-sm">{evento.cargaHoraria}h</span>
+                        <span className="text-sm">{palestra.cargaHoraria}h</span>
                       </div>
                     </div>
 
-                    {evento.descricao && (
+                    {palestra.descricao && (
                       <p className="text-sm text-gray-600 line-clamp-2">
-                        {evento.descricao}
+                        {palestra.descricao}
                       </p>
                     )}
                   </div>
@@ -150,18 +165,21 @@ function OnboardingPage() {
           {/* Dica de Performance */}
           <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-5 shadow-sm">
             <div className="flex gap-3">
-              <BookOpen size={24} className="text-emerald-600 flex-shrink-0 mt-0.5" />
+              <BookOpen
+                size={24}
+                className="text-emerald-600 flex-shrink-0 mt-0.5"
+              />
               <div>
                 <h3 className="font-bold text-gray-900 text-base mb-2">
                   Dica de performance
                 </h3>
                 <p className="text-sm text-gray-700 leading-relaxed">
-                  Comece a palestra com uma pergunta para gerar engajamento e interação com os participantes
+                  Comece a palestra com uma pergunta para gerar engajamento e
+                  interação com os participantes
                 </p>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

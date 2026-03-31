@@ -3,6 +3,7 @@ import OnboardingPage from "../pages/OnboardingPage";
 import EventoDetailPage from "../pages/EventoDetailPage";
 import AdminPage from "../pages/AdminPage";
 import LoginPage from "../pages/LoginPage";
+import PrivateRoute from "./PrivateRoute";
 
 const router = createBrowserRouter([
     {
@@ -15,7 +16,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/admin",
-        element: <AdminPage />,
+        element: <PrivateRoute><AdminPage /></PrivateRoute>,
     },
     {
         path: "/login",

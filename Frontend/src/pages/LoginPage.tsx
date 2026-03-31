@@ -1,20 +1,21 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, ArrowRight, ShieldCheck } from 'lucide-react';
+import { useAuthStore } from '../stores/useAuthStore';
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Puxar login, error e loading da store (em vez de estado local)
+  const { login, error, loading, clearError } = useAuthStore();
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validação mockada simples - depois conectaremos ao backend
-    if (username === 'admin' && password === 'admin') {
+    const sucesso = await login(email, password);
+    if (sucesso) {
       navigate('/admin');
-    } else {
-      setError('Credenciais incorretas. Dica: use admin / admin');
     }
   };
 
@@ -56,17 +57,18 @@ function LoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-emerald-100 ml-1">Usuário</label>
+              <label className="text-sm font-medium text-emerald-100 ml-1">Email</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <User size={18} className="text-emerald-200/50 group-focus-within:text-emerald-300 transition-colors" />
                 </div>
                 <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onFocus={clearError}
                   className="w-full pl-11 pr-4 py-3.5 bg-black/20 border border-white/10 rounded-xl text-white placeholder-emerald-100/30 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 focus:bg-black/30 transition-all backdrop-blur-sm shadow-inner"
-                  placeholder="admin"
+                  placeholder="admin@weekpage.com"
                   required
                 />
               </div>
@@ -97,10 +99,11 @@ function LoginPage() {
 
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 py-4 px-4 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-teal-950 font-bold rounded-xl shadow-lg shadow-emerald-500/25 transform transition-all active:scale-[0.98] hover:shadow-emerald-500/40 mt-4 group"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 py-4 px-4 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-teal-950 font-bold rounded-xl shadow-lg shadow-emerald-500/25 transform transition-all active:scale-[0.98] hover:shadow-emerald-500/40 mt-4 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="text-base tracking-wide">Acessar Painel</span>
-              <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform duration-300" />
+              <span className="text-base tracking-wide">{loading ? 'Entrando...' : 'Acessar Painel'}</span>
+              {!loading && <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform duration-300" />}
             </button>
           </form>
 

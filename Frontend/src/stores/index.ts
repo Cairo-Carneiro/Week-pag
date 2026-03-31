@@ -1,22 +1,10 @@
 /**
- * Store Index
- * Central export point for all Zustand stores
- * Makes imports cleaner throughout the app
+ * Stores barrel file
+ * Re-exports all stores para importação simplificada:
+ * import { usePalestraStore, useAuthStore } from '@/stores';
  */
 
-// Export all stores
 export { usePalestraStore, usePalestrasByStatus } from './usePalestraStore';
-export { 
-  useResponsibilityStore,
-  useIncompleteResponsabilidades,
-  useCompleteResponsabilidades,
-  useCriticalResponsabilidades,
-  useResponsabilidadeCount,
-  useFilteredResponsabilidades,
-} from './useResponsibilityStore';
-export { 
-  useThemeStore, 
-  initializeTheme, 
-  listenToSystemThemeChanges,
-  type Theme,
-} from './useThemeStore';
+export { useResponsibilityStore } from './useResponsibilityStore';
+export { useThemeStore } from './useThemeStore';
+export { useAuthStore } from './useAuthStore';

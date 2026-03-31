@@ -22,6 +22,20 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
  * Formato padrão de resposta que o nosso backend sempre retorna:
  * { success: true, data: [...] }  ou  { success: false, error: "mensagem" }
  */
+
+function getHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  const token = localStorage.getItem('weekpage_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+  
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -41,7 +55,7 @@ export interface ApiResponse<T> {
 export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
   const response = await fetch(`${BASE_URL}${path}`, {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(),
   });
 
   if (!response.ok) {
@@ -58,7 +72,7 @@ export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
 export async function apiPost<T>(path: string, body: unknown): Promise<ApiResponse<T>> {
   const response = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(),
     body: JSON.stringify(body),
   });
 
@@ -77,7 +91,7 @@ export async function apiPost<T>(path: string, body: unknown): Promise<ApiRespon
 export async function apiPut<T>(path: string, body: unknown): Promise<ApiResponse<T>> {
   const response = await fetch(`${BASE_URL}${path}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(),
     body: JSON.stringify(body),
   });
 
@@ -96,7 +110,7 @@ export async function apiPut<T>(path: string, body: unknown): Promise<ApiRespons
 export async function apiDelete(path: string): Promise<ApiResponse<null>> {
   const response = await fetch(`${BASE_URL}${path}`, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(),
   });
 
   if (!response.ok) {
@@ -115,7 +129,7 @@ export async function apiDelete(path: string): Promise<ApiResponse<null>> {
 export async function apiPatch<T>(path: string, body?: unknown): Promise<ApiResponse<T>> {
   const response = await fetch(`${BASE_URL}${path}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(),
     body: body ? JSON.stringify(body) : undefined,
   });
 
