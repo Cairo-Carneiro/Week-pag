@@ -10,7 +10,7 @@ import { Calendar, TrendingUp, Lightbulb, LogOut, Plus, Home } from 'lucide-reac
 import { Toaster } from 'sonner';
 
 // Stores
-import { usePalestraStore, useResponsibilityStore } from '@/stores';
+import { usePalestraStore, useResponsibilityStore, useAuthStore } from '@/stores';
 
 // Components
 import { AgendaCard } from '@/app/components/AgendaCard';
@@ -53,6 +53,9 @@ function AdminPage() {
     deleteResponsabilidade,
   } = useResponsibilityStore();
 
+  // Auth Store
+  const { logout } = useAuthStore();
+
   // Modal states
   const [isPalestraModalOpen, setIsPalestraModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -66,6 +69,11 @@ function AdminPage() {
 
   // Handlers
   const handleBackToAgenda = () => {
+    navigate('/');
+  };
+
+  const handleLogout = () => {
+    logout();
     navigate('/');
   };
 
@@ -171,7 +179,7 @@ function AdminPage() {
                   <span className="text-sm font-medium">Agenda</span>
                 </button>
                 <button
-                  onClick={handleBackToAgenda}
+                  onClick={handleLogout}
                   className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all border border-white/20"
                 >
                   <LogOut size={18} />
@@ -251,7 +259,7 @@ function AdminPage() {
             {/* Responsabilidades */}
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-5">
-                Ações obrigatórias desta semana
+                Ações Obrigatórias do Onboarding
               </h2>
 
               <div className="space-y-3 mb-4">

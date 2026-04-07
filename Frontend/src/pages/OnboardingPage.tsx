@@ -2,9 +2,11 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Clock, MapPin, Users, BookOpen, Settings } from "lucide-react";
 import { usePalestraStore } from "@/stores/usePalestraStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 function OnboardingPage() {
   const navigate = useNavigate();
+  const {isAuthenticated} = useAuthStore();
 
   const { palestras, loading, error, fetchPalestras } = usePalestraStore();
 
@@ -16,7 +18,11 @@ function OnboardingPage() {
   };
 
   const handleAdminClick = () => {
-    navigate("/login");
+    if (isAuthenticated) {
+      navigate("/admin");
+    } else {
+      navigate("/login");
+    }
   };
 
   if (loading) {
