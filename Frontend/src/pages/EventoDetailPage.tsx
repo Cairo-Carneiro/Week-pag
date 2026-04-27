@@ -8,7 +8,7 @@ function EventoDetailPage() {
   const navigate = useNavigate();
   const [presencaLocal, setPresencaLocal] = useState(false);
 
-  const { selectedPalestra: palestra, loading, error, fetchPalestraById } = usePalestraStore();
+  const { selectedPalestra: palestra, loading, error, fetchPalestraById, updatePalestra } = usePalestraStore();
 
   useEffect(() => {
     if (id) {
@@ -16,10 +16,11 @@ function EventoDetailPage() {
     }
   }, [id, fetchPalestraById]);
 
-  const handleConfirmarPresenca = () => {
+  const handleConfirmarPresenca = async () => {
     setPresencaLocal(true);
-    // TODO: Futuramente, chamar updatePalestra para salvar no backend
-    console.log('Presença confirmada para palestra:', id);
+    if (id) {
+      await updatePalestra(id, { presencaConfirmada: true });
+    }
   };
 
   if (loading) {
