@@ -3,6 +3,21 @@ import { ArrowLeft, MapPin, Clock, Users, BookOpen, CheckCircle } from 'lucide-r
 import { useEffect } from 'react';
 import { usePalestraStore } from '@/stores/usePalestraStore';
 
+function toMinutes(duration: { hour: number; minute: number } | number): number {
+  if (typeof duration === 'number') return duration * 60;
+  if (!duration) return 0;
+  return (duration.hour * 60) + duration.minute;
+}
+
+function formatDuration(totalMinutes: number): string {
+  const h = Math.floor(totalMinutes / 60);
+  const m = Math.floor(totalMinutes % 60);
+  if (h === 0 && m === 0) return '0h';
+  if (h === 0) return `${m}min`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}min`;
+}
+
 function EventoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -139,7 +154,7 @@ function EventoDetailPage() {
                 <Clock size={18} />
                 <span className="font-semibold">Carga Horária</span>
               </div>
-              <p className="text-gray-900 font-medium">{palestra.cargaHoraria || 0}h</p>
+              <p className="text-gray-900 font-medium">{formatDuration(toMinutes(palestra.cargaHoraria || 0))}</p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4">

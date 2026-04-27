@@ -5,6 +5,21 @@ import { usePalestraStore } from "@/stores/usePalestraStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { StatusBadge } from "@/app/components/StatusBadge";
 
+function toMinutes(duration: { hour: number; minute: number } | number): number {
+  if (typeof duration === 'number') return duration * 60;
+  if (!duration) return 0;
+  return (duration.hour * 60) + duration.minute;
+}
+
+function formatDuration(totalMinutes: number): string {
+  const h = Math.floor(totalMinutes / 60);
+  const m = Math.floor(totalMinutes % 60);
+  if (h === 0 && m === 0) return '0h';
+  if (h === 0) return `${m}min`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}min`;
+}
+
 function OnboardingPage() {
   const navigate = useNavigate();
   const {isAuthenticated} = useAuthStore();
@@ -98,6 +113,8 @@ function OnboardingPage() {
             <p className="text-gray-600">
               {palestras.length}{" "}
               {palestras.length === 1 ? "palestra agendada" : "palestras agendadas"}
+              {" • "}
+              Duração total: {formatDuration(palestras.reduce((acc, p) => acc + toMinutes(p.cargaHoraria || 0), 0))}
             </p>
           </div>
 
@@ -151,7 +168,7 @@ function OnboardingPage() {
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <BookOpen size={16} />
-                        <span className="text-sm">{palestra.cargaHoraria || 0}h</span>
+                        <span className="text-sm">{formatDuration(toMinutes(palestra.cargaHoraria || 0))}</span>
                       </div>
                     </div>
 
