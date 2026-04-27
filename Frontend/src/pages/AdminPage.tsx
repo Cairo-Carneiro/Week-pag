@@ -21,7 +21,7 @@ import { DeleteConfirmDialog } from '@/app/components/DeleteConfirmDialog';
 import { ResponsibilityForm } from '@/app/components/ResponsibilityForm';
 import { FilterBar } from '@/app/components/FilterBar';
 import { ViewModeToggle } from '@/app/components/ViewModeToggle';
-import { ThemeToggle } from '@/app/components/ThemeToggle';
+
 import { LoadingSpinner } from '@/app/components/LoadingSpinner';
 import { EmptyState } from '@/app/components/EmptyState';
 import { WeeklyCalendar } from '@/app/components/WeeklyCalendar';
@@ -170,7 +170,7 @@ function AdminPage() {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <ThemeToggle />
+
                 <button
                   onClick={handleBackToAgenda}
                   className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all border border-white/20"

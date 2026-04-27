@@ -177,8 +177,21 @@ export function PalestraFormModal({
 
   const onSubmit = async (data: PalestraFormData) => {
     try {
+      // Limpa valores vazios e calcula cargaHoraria automaticamente
+      const payload = { ...data };
+      
+      if (startTime && endTime) {
+        const [startHour, startMin] = startTime.split(':').map(Number);
+        const [endHour, endMin] = endTime.split(':').map(Number);
+        let totalMinutes = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+        if (totalMinutes < 0) totalMinutes += 24 * 60;
+        payload.cargaHoraria = parseFloat((totalMinutes / 60).toFixed(2));
+      } else {
+        payload.cargaHoraria = undefined;
+      }
+      
       if (isEditMode) {
-        const result = await updatePalestra(palestra.id, data);
+        const result = await updatePalestra(palestra.id, payload);
         if (result) {
           showSuccess('Palestra atualizada!', 'As alterações foram salvas com sucesso.');
           onOpenChange(false);
@@ -186,7 +199,7 @@ export function PalestraFormModal({
           showError('Erro ao atualizar', 'Não foi possível atualizar a palestra.');
         }
       } else {
-        const result = await createPalestra(data);
+        const result = await createPalestra(payload);
         if (result) {
           showSuccess('Palestra criada!', 'A nova palestra foi adicionada à agenda.');
           onOpenChange(false);
@@ -376,6 +389,19 @@ export function PalestraFormModal({
                 {errors.publico.message}
               </span>
             )}
+          </div>
+
+          {/* Facilitador */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
+              Facilitador
+            </label>
+            <input
+              type="text"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
+              placeholder="Ex: João Silva"
+              {...register('facilitador')}
+            />
           </div>
 
           {/* Status */}

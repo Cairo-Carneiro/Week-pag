@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Clock, MapPin, Users, BookOpen, Settings } from "lucide-react";
+import { Clock, MapPin, Users, BookOpen, Settings, CalendarIcon } from "lucide-react";
 import { usePalestraStore } from "@/stores/usePalestraStore";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { StatusBadge } from "@/app/components/StatusBadge";
 
 function OnboardingPage() {
   const navigate = useNavigate();
@@ -134,7 +135,7 @@ function OnboardingPage() {
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <div className="flex items-center gap-2 text-gray-600">
                         <Users size={16} />
-                        <span className="text-sm">{palestra.facilitador}</span>
+                        <span className="text-sm">{palestra.facilitador || 'Não definido'}</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <MapPin size={16} />
@@ -145,8 +146,12 @@ function OnboardingPage() {
                         <span className="text-sm">{palestra.publico}</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
+                        <CalendarIcon size={16} />
+                        <span className="text-sm">{palestra.data}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
                         <BookOpen size={16} />
-                        <span className="text-sm">{palestra.cargaHoraria}h</span>
+                        <span className="text-sm">{palestra.cargaHoraria || 0}h</span>
                       </div>
                     </div>
 
@@ -159,9 +164,7 @@ function OnboardingPage() {
 
                   {/* Status Badge */}
                   <div className="flex-shrink-0">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
-                      Agendado
-                    </span>
+                    <StatusBadge status={palestra.status} size="sm" />
                   </div>
                 </div>
               </div>

@@ -1,12 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, Users, BookOpen, CheckCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { usePalestraStore } from '@/stores/usePalestraStore';
 
 function EventoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [presencaLocal, setPresencaLocal] = useState(false);
 
   const { selectedPalestra: palestra, loading, error, fetchPalestraById, updatePalestra } = usePalestraStore();
 
@@ -17,9 +16,25 @@ function EventoDetailPage() {
   }, [id, fetchPalestraById]);
 
   const handleConfirmarPresenca = async () => {
-    setPresencaLocal(true);
-    if (id) {
-      await updatePalestra(id, { presencaConfirmada: true });
+    if (id && palestra) {
+      // Recalcular carga horária com base no horário de início e término
+      let cargaHorariaCalculada: number | undefined = undefined;
+      
+      if (palestra.horario && palestra.horario.includes(' - ')) {
+        const [startTime, endTime] = palestra.horario.split(' - ').map(s => s.trim());
+        const [startHour, startMin] = startTime.split(':').map(Number);
+        const [endHour, endMin] = endTime.split(':').map(Number);
+        
+        let totalMinutes = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+        if (totalMinutes < 0) totalMinutes += 24 * 60;
+        cargaHorariaCalculada = parseFloat((totalMinutes / 60).toFixed(2));
+      }
+
+      await updatePalestra(id, { 
+        presencaConfirmada: true,
+        status: 'confirmado',
+        ...(cargaHorariaCalculada !== undefined && { cargaHoraria: cargaHorariaCalculada })
+      });
     }
   };
 
@@ -51,7 +66,7 @@ function EventoDetailPage() {
     );
   }
 
-  const isPresencaConfirmada = presencaLocal || palestra.presencaConfirmada;
+  const isPresencaConfirmada = palestra.presencaConfirmada || palestra.status === 'confirmado';
 
   return (
     <div 
