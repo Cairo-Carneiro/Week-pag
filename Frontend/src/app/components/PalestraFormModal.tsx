@@ -21,7 +21,8 @@ import { showSuccess, showError } from '@/utils/toast';
 import { LoadingSpinner } from './LoadingSpinner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarIcon, Clock, ChevronUp, ChevronDown } from 'lucide-react';
+import { CalendarIcon, Clock, ArrowRight } from 'lucide-react';
+import { TimePicker } from './TimePicker';
 
 interface PalestraFormModalProps {
   open: boolean;
@@ -40,8 +41,8 @@ export function PalestraFormModal({
   // Custom states for Date and Time
   const [diaSemana, setDiaSemana] = useState('');
   const [date, setDate] = useState<Date | undefined>(undefined);
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [startTime, setStartTime] = useState({ hour: 8, minute: 0 });
+  const [endTime, setEndTime] = useState({ hour: 9, minute: 0 });
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const {
@@ -87,15 +88,18 @@ export function PalestraFormModal({
         if (palestra.horario) {
           const parts = palestra.horario.split(' - ');
           if (parts.length === 2) {
-            setStartTime(parts[0].trim());
-            setEndTime(parts[1].trim());
+            const [sh, sm] = parts[0].trim().split(':').map(Number);
+            const [eh, em] = parts[1].trim().split(':').map(Number);
+            setStartTime({ hour: sh || 0, minute: sm || 0 });
+            setEndTime({ hour: eh || 0, minute: em || 0 });
           } else {
-            setStartTime(palestra.horario);
-            setEndTime('');
+            const [sh, sm] = palestra.horario.split(':').map(Number);
+            setStartTime({ hour: sh || 0, minute: sm || 0 });
+            setEndTime({ hour: 9, minute: 0 });
           }
         } else {
-          setStartTime('');
-          setEndTime('');
+          setStartTime({ hour: 8, minute: 0 });
+          setEndTime({ hour: 9, minute: 0 });
         }
 
       } else {
@@ -110,8 +114,8 @@ export function PalestraFormModal({
           observacao: '',
         });
         setDate(undefined);
-        setStartTime('');
-        setEndTime('');
+        setStartTime({ hour: 8, minute: 0 });
+        setEndTime({ hour: 9, minute: 0 });
       }
     }
   }, [open, palestra, reset]);
@@ -135,21 +139,15 @@ export function PalestraFormModal({
   };
 
   useEffect(() => {
-    if (startTime && endTime) {
-      setValue('horario', `${startTime} - ${endTime}`, { shouldValidate: true });
-    } else if (startTime) {
-      setValue('horario', startTime, { shouldValidate: true });
-    } else {
-      setValue('horario', '', { shouldValidate: true });
-    }
+    const sh = String(startTime.hour).padStart(2, '0');
+    const sm = String(startTime.minute).padStart(2, '0');
+    const eh = String(endTime.hour).padStart(2, '0');
+    const em = String(endTime.minute).padStart(2, '0');
+    setValue('horario', `${sh}:${sm} - ${eh}:${em}`, { shouldValidate: true });
   }, [startTime, endTime, setValue]);
 
   const calculateDuration = () => {
-    if (!startTime || !endTime) return '';
-    const [startHour, startMin] = startTime.split(':').map(Number);
-    const [endHour, endMin] = endTime.split(':').map(Number);
-    
-    let totalMinutes = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+    let totalMinutes = (endTime.hour * 60 + endTime.minute) - (startTime.hour * 60 + startTime.minute);
     if (totalMinutes < 0) totalMinutes += 24 * 60; // Just in case it wraps past midnight
     
     const hours = Math.floor(totalMinutes / 60);
@@ -159,31 +157,13 @@ export function PalestraFormModal({
     return `${hours > 0 ? `${hours}h` : ''}${mins > 0 ? `${mins}min` : ''}`;
   };
 
-  // Ajusta hora ou minuto do despertador (com wrapping)
-  const adjustTime = (time: string, field: 'h' | 'm', delta: number, setter: (v: string) => void) => {
-    let h = time ? parseInt(time.split(':')[0], 10) : 6;
-    let m = time ? parseInt(time.split(':')[1], 10) : 0;
-    if (field === 'h') {
-      h = (h + delta + 24) % 24;
-    } else {
-      // minutos em passos de 5 (0 → 5 → 10 → ... → 55 → 0)
-      const steps = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
-      const idx = steps.indexOf(m);
-      const nextIdx = idx === -1 ? 0 : (idx + (delta > 0 ? 1 : -1) + 12) % 12;
-      m = steps[nextIdx];
-    }
-    setter(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
-  };
-
   const onSubmit = async (data: PalestraFormData) => {
     try {
       // Limpa valores vazios e calcula cargaHoraria automaticamente
       const payload = { ...data };
       
       if (startTime && endTime) {
-        const [startHour, startMin] = startTime.split(':').map(Number);
-        const [endHour, endMin] = endTime.split(':').map(Number);
-        let totalMinutes = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+        let totalMinutes = (endTime.hour * 60 + endTime.minute) - (startTime.hour * 60 + startTime.minute);
         if (totalMinutes < 0) totalMinutes += 24 * 60;
         payload.cargaHoraria = parseFloat((totalMinutes / 60).toFixed(2));
       } else {
@@ -286,68 +266,36 @@ export function PalestraFormModal({
             )}
           </div>
 
-          {/* Horário — estilo despertador */}
+          {/* Horário — estilo drum picker */}
           <div>
             <label className="block text-sm font-semibold text-gray-900 mb-3">
               Horário *
             </label>
-            <div className="grid grid-cols-2 gap-4">
-
-              {/* Início */}
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-xs text-from-emerald-500 to-emerald-600 font-medium">Início</span>
-                <div className="flex items-center gap-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl px-5 py-3 select-none">
-                  {/* Hora */}
-                  <div className="flex flex-col items-center">
-                    <button type="button" onClick={() => adjustTime(startTime, 'h', 1, setStartTime)} className="text-gray-500 hover:text-emerald-400 transition-colors p-1"><ChevronUp size={18} /></button>
-                    <span className="text-4xl font-bold text-white w-14 text-center tabular-nums leading-none py-1">
-                      {startTime ? startTime.split(':')[0] : '--'}
-                    </span>
-                    <button type="button" onClick={() => adjustTime(startTime, 'h', -1, setStartTime)} className="text-gray-500 hover:text-emerald-400 transition-colors p-1"><ChevronDown size={18} /></button>
-                  </div>
-                  <span className="text-3xl font-bold text-gray-500">:</span>
-                  {/* Minuto */}
-                  <div className="flex flex-col items-center">
-                    <button type="button" onClick={() => adjustTime(startTime, 'm', 1, setStartTime)} className="text-gray-500 hover:text-emerald-400 transition-colors p-1"><ChevronUp size={18} /></button>
-                    <span className="text-4xl font-bold text-white w-14 text-center tabular-nums leading-none py-1">
-                      {startTime ? startTime.split(':')[1] : '00'}
-                    </span>
-                    <button type="button" onClick={() => adjustTime(startTime, 'm', -1, setStartTime)} className="text-gray-500 hover:text-emerald-400 transition-colors p-1"><ChevronDown size={18} /></button>
-                  </div>
-                </div>
+            <div className="flex items-center gap-6">
+              <TimePicker
+                label="Início"
+                value={startTime}
+                onChange={setStartTime}
+                minuteStep={5}
+              />
+              
+              <div className="flex items-center text-emerald-500 pt-6">
+                <ArrowRight size={24} className="opacity-50" />
               </div>
 
-              {/* Fim */}
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-xs text-gray-500 font-medium">Fim</span>
-                <div className="flex items-center gap-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl px-5 py-3 select-none">
-                  {/* Hora */}
-                  <div className="flex flex-col items-center">
-                    <button type="button" onClick={() => adjustTime(endTime, 'h', 1, setEndTime)} className="text-gray-500 hover:text-emerald-400 transition-colors p-1"><ChevronUp size={18} /></button>
-                    <span className="text-4xl font-bold text-white w-14 text-center tabular-nums leading-none py-1">
-                      {endTime ? endTime.split(':')[0] : '--'}
-                    </span>
-                    <button type="button" onClick={() => adjustTime(endTime, 'h', -1, setEndTime)} className="text-gray-500 hover:text-emerald-400 transition-colors p-1"><ChevronDown size={18} /></button>
-                  </div>
-                  <span className="text-3xl font-bold text-gray-500">:</span>
-                  {/* Minuto */}
-                  <div className="flex flex-col items-center">
-                    <button type="button" onClick={() => adjustTime(endTime, 'm', 1, setEndTime)} className="text-gray-500 hover:text-emerald-400 transition-colors p-1"><ChevronUp size={18} /></button>
-                    <span className="text-4xl font-bold text-white w-14 text-center tabular-nums leading-none py-1">
-                      {endTime ? endTime.split(':')[1] : '00'}
-                    </span>
-                    <button type="button" onClick={() => adjustTime(endTime, 'm', -1, setEndTime)} className="text-gray-500 hover:text-emerald-400 transition-colors p-1"><ChevronDown size={18} /></button>
-                  </div>
-                </div>
-              </div>
-
+              <TimePicker
+                label="Fim"
+                value={endTime}
+                onChange={setEndTime}
+                minuteStep={5}
+              />
             </div>
+            
             <input type="hidden" {...register('horario', { required: 'Horário é obrigatório' })} />
-            {(startTime && endTime) && (
-              <span className="text-xs text-emerald-600 mt-2 flex items-center gap-1 font-medium">
-                <Clock size={12} /> Duração: {calculateDuration()}
-              </span>
-            )}
+            
+            <span className="text-xs text-emerald-600 mt-3 flex items-center gap-1 font-medium">
+              <Clock size={12} /> Duração: {calculateDuration()}
+            </span>
             {errors.horario && (
               <span className="text-red-500 text-sm mt-1 block">
                 {errors.horario.message}
