@@ -55,7 +55,7 @@ function EventoDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-svh flex items-center justify-center bg-gray-50">
         <p className="text-xl font-bold text-gray-500 animate-pulse">
           Carregando detalhes...
         </p>
@@ -65,7 +65,7 @@ function EventoDetailPage() {
 
   if (error || !palestra) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-svh flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <p className="text-xl font-bold text-red-500 mb-4">
             {error || 'Palestra não encontrada'}
@@ -85,7 +85,7 @@ function EventoDetailPage() {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4"
+      className="min-h-svh flex items-center justify-center p-4"
       style={{
         background: 'linear-gradient(-45deg, #d1fae5, #a7f3d0, #6ee7b7, #34d399)',
         backgroundSize: '400% 400%',
