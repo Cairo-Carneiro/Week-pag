@@ -21,7 +21,7 @@ function LoginPage() {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+      className="min-h-svh flex items-center justify-center p-4 relative overflow-hidden"
       style={{
         background: 'linear-gradient(-45deg, #022c22, #064e3b, #047857, #10b981)',
         backgroundSize: '400% 400%',

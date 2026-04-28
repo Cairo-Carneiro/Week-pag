@@ -28,7 +28,7 @@ export default function PrivateRoute({ children }: PrivateRouteProps) {
   // Enquanto verifica o token, mostra loading
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-svh flex items-center justify-center bg-gray-50">
         <p className="text-xl font-bold text-gray-500 animate-pulse">
           Verificando autenticação...
         </p>
