@@ -85,7 +85,7 @@ function OnboardingPage() {
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  Agenda de Onboarding
+                  Consulte sua agenda
                 </h1>
                 <p className="text-lg text-gray-700 mb-1">
                   Olá! Aqui está sua agenda de hoje
