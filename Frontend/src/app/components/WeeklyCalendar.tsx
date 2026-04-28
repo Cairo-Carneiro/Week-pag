@@ -143,7 +143,8 @@ export function WeeklyCalendar({ palestras, onPalestraClick }: WeeklyCalendarPro
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-5 divide-x divide-gray-200">
+      <div className="overflow-x-auto md:overflow-visible">
+        <div className="grid grid-cols-5 divide-x divide-gray-200 min-w-[800px] md:min-w-0">
         {weekDays.map((day) => {
           const dateKey = day.date.toDateString();
           const dayPalestras = palestrasByDay[dateKey] || [];
@@ -214,6 +215,7 @@ export function WeeklyCalendar({ palestras, onPalestraClick }: WeeklyCalendarPro
             </div>
           );
         })}
+        </div>
       </div>
 
       {/* Legend */}
