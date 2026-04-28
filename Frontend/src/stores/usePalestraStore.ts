@@ -14,6 +14,38 @@ import {
 } from "../types/types";
 import * as palestraService from "../services/palestraService";
 
+// Helper function to sort palestras chronologically ascending
+const sortPalestrasChronologically = (palestras: Palestra[]) => {
+  return [...palestras].sort((a, b) => {
+    // Parse data "DD/MM"
+    const [dayA, monthA] = (a.data || '').split('/').map(Number);
+    const [dayB, monthB] = (b.data || '').split('/').map(Number);
+
+    const mA = monthA || 0;
+    const mB = monthB || 0;
+    if (mA !== mB) return mA - mB; // crescente
+
+    const dA = dayA || 0;
+    const dB = dayB || 0;
+    if (dA !== dB) return dA - dB; // crescente
+
+    // Parse horario "HH:mm - HH:mm"
+    const startTimeA = (a.horario || '').split('-')[0]?.trim() || '';
+    const startTimeB = (b.horario || '').split('-')[0]?.trim() || '';
+
+    const [hourA, minA] = startTimeA.split(':').map(Number);
+    const [hourB, minB] = startTimeB.split(':').map(Number);
+
+    const hA = hourA || 0;
+    const hB = hourB || 0;
+    if (hA !== hB) return hA - hB; // crescente
+
+    const minPartA = minA || 0;
+    const minPartB = minB || 0;
+    return minPartA - minPartB; // crescente
+  });
+};
+
 // ============================================
 // STORE STATE INTERFACE
 // ============================================
@@ -93,7 +125,11 @@ export const usePalestraStore = create<PalestraState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const palestras = await palestraService.getAll();
-      set({ palestras, loading: false });
+      
+      // Ordenação cronológica (Crescente: mais antiga/próxima primeiro)
+      const sortedPalestras = sortPalestrasChronologically(palestras);
+
+      set({ palestras: sortedPalestras, loading: false });
     } catch (error) {
       set({
         error:
@@ -258,7 +294,8 @@ export const usePalestraStore = create<PalestraState>((set, get) => ({
 
     try {
       const filteredPalestras = await palestraService.filterPalestras(filters);
-      set({ palestras: filteredPalestras, loading: false });
+      const sortedFiltered = sortPalestrasChronologically(filteredPalestras);
+      set({ palestras: sortedFiltered, loading: false });
     } catch (error) {
       set({
         error:
