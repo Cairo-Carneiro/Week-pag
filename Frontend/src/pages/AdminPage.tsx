@@ -157,9 +157,9 @@ function AdminPage() {
       {/* Toast Notifications */}
       <Toaster position="top-right" richColors />
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-svh bg-gray-50">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-12 px-6">
+        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-6 md:py-12 px-4 md:px-6">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
@@ -169,7 +169,7 @@ function AdminPage() {
                   Gestão de Palestras e Responsabilidades
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
 
                 <button
                   onClick={handleBackToAgenda}
