@@ -43,7 +43,7 @@ function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-svh flex items-center justify-center bg-gray-50">
         <p className="text-x1 font-bold text-gray-500 animate-pulse">
           Carregando agenda...
         </p>
@@ -53,14 +53,14 @@ function OnboardingPage() {
 
   if (error) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-svh flex items-center justify-center bg-gray-50">
         <p className="text-x1 font-bold text-red-500">{error}</p>
       </div>
     );
   }
   return (
     <div
-      className="h-screen flex items-center justify-center p-4"
+      className="min-h-svh flex items-center justify-center p-4"
       style={{
         background:
           "linear-gradient(-45deg, #d1fae5, #a7f3d0, #6ee7b7, #34d399)",
@@ -77,7 +77,7 @@ function OnboardingPage() {
       `}</style>
 
       {/* Container com Scroll */}
-      <div className="w-full max-w-4xl h-[90vh] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+      <div className="w-full max-w-4xl h-[90svh] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         {/* Conteúdo com Scroll */}
         <div className="flex-1 overflow-y-auto px-6 py-8">
           {/* Header */}
@@ -131,7 +131,7 @@ function OnboardingPage() {
                   <div className="absolute left-8 top-full w-0.5 h-4 bg-emerald-200" />
                 )}
 
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                   {/* Time Badge */}
                   <div className="flex-shrink-0">
                     <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white px-4 py-2 rounded-lg text-center min-w-[100px]">
@@ -149,7 +149,7 @@ function OnboardingPage() {
                       {palestra.titulo}
                     </h3>
 
-                    <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                       <div className="flex items-center gap-2 text-gray-600">
                         <Users size={16} />
                         <span className="text-sm">{palestra.facilitador || 'Não definido'}</span>

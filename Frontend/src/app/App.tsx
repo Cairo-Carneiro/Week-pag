@@ -153,7 +153,7 @@ function App() {
       {/* Toast Notifications */}
       <Toaster position="top-right" richColors />
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-svh bg-gray-50">
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-12 px-6">
           <div className="max-w-6xl mx-auto">

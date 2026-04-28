@@ -194,7 +194,7 @@ export function PalestraFormModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-full">
+      <DialogContent className="max-w-2xl max-h-[90svh] overflow-y-auto w-full">
         <DialogHeader>
           <DialogTitle>
             {isEditMode ? 'Editar Palestra' : 'Nova Palestra'}
@@ -271,7 +271,7 @@ export function PalestraFormModal({
             <label className="block text-sm font-semibold text-gray-900 mb-3">
               Horário *
             </label>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-6">
               <TimePicker
                 label="Início"
                 value={startTime}
@@ -358,7 +358,7 @@ export function PalestraFormModal({
               Status *
             </label>
             <input type="hidden" {...register('status', { required: 'Status é obrigatório' })} />
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {([
                 { value: 'confirmado', label: '✅ Confirmado' },
                 { value: 'atenção',    label: '⚠️ Atenção'    },
