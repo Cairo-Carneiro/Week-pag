@@ -160,7 +160,17 @@ export function PalestraFormModal({
   const onSubmit = async (data: PalestraFormData) => {
     try {
       // Limpa valores vazios e calcula cargaHoraria automaticamente
-      const payload = { ...data };
+      // Garante que o status correto do estado (watch) seja enviado,
+      // prevenindo bugs onde o input hidden perde o valor
+      const payload: Partial<Palestra> = { ...data, status: watch('status') };
+      
+      // Sincronização: se o admin mudou o status manualmente para pendente ou atenção,
+      // devemos anular a flag de presencaConfirmada para refletir corretamente na EventoDetailPage
+      if (payload.status === 'pendente' || payload.status === 'atenção') {
+        payload.presencaConfirmada = false;
+      } else if (payload.status === 'confirmado') {
+        payload.presencaConfirmada = true;
+      }
       
       if (startTime && endTime) {
         let totalMinutes = (endTime.hour * 60 + endTime.minute) - (startTime.hour * 60 + startTime.minute);

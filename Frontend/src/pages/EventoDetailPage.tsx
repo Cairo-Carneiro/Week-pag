@@ -174,6 +174,14 @@ function EventoDetailPage() {
             </div>
           )}
 
+          {/* Observações */}
+          {palestra.observacao && (
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">Observações</h2>
+              <p className="text-gray-700 leading-relaxed bg-yellow-50 p-4 rounded-lg border border-yellow-200">{palestra.observacao}</p>
+            </div>
+          )}
+
           {/* Ações */}
           <div className="flex flex-wrap gap-4 pt-4 border-t">
             <button
