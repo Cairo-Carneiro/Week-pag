@@ -11,6 +11,7 @@ import { StatusBadge } from './StatusBadge';
 interface WeeklyCalendarProps {
   palestras: Palestra[];
   onPalestraClick?: (palestra: Palestra) => void;
+  onDayClick?: (dateKey: string) => void;
 }
 
 interface WeekDay {
@@ -20,7 +21,7 @@ interface WeekDay {
   isToday: boolean;
 }
 
-export function WeeklyCalendar({ palestras, onPalestraClick }: WeeklyCalendarProps) {
+export function WeeklyCalendar({ palestras, onPalestraClick, onDayClick }: WeeklyCalendarProps) {
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
 
   // Get current week days
@@ -143,38 +144,61 @@ export function WeeklyCalendar({ palestras, onPalestraClick }: WeeklyCalendarPro
       </div>
 
       {/* Calendar Grid */}
-      <div className="overflow-x-auto md:overflow-visible">
-        <div className="grid grid-cols-5 divide-x divide-gray-200 min-w-[800px] md:min-w-0">
+      <div>
+        <div className="flex flex-col gap-4 p-4 md:p-0 bg-gray-50 md:bg-white md:grid md:grid-cols-5 md:gap-0 md:divide-x md:divide-gray-200">
         {weekDays.map((day) => {
           const dateKey = day.date.toDateString();
           const dayPalestras = palestrasByDay[dateKey] || [];
           
           return (
-            <div key={dateKey} className="min-h-[400px]">
+            <div 
+              key={dateKey} 
+              className={`md:min-h-[400px] rounded-xl md:rounded-none overflow-hidden bg-white border ${
+                day.isToday ? 'border-emerald-300 md:border-transparent shadow-md' : 'border-gray-200 md:border-transparent shadow-sm md:shadow-none'
+              }`}
+            >
               {/* Day Header */}
               <div
-                className={`p-3 border-b border-gray-200 ${
-                  day.isToday ? 'bg-emerald-50' : 'bg-gray-50'
+                className={`p-3 md:border-b md:border-gray-200 flex flex-col items-center justify-center ${
+                  day.isToday ? 'bg-emerald-50' : 'bg-gray-50 md:bg-gray-50'
                 }`}
               >
-                <div className="text-center">
-                  <div className="text-xs font-medium text-gray-600 uppercase">
-                    {day.dayName}
+                <div className="flex flex-row md:flex-col items-center justify-between md:justify-center w-full">
+                  <div className="flex flex-row items-center gap-2 md:flex-col md:gap-0 text-center">
+                    <div className="text-sm md:text-xs font-medium text-gray-600 uppercase">
+                      {day.dayName}
+                    </div>
+                    <div
+                      className={`text-2xl md:mt-1 md:text-lg font-bold ${
+                        day.isToday
+                          ? 'text-emerald-600'
+                          : 'text-gray-900'
+                      }`}
+                    >
+                      {day.dayNumber}
+                    </div>
                   </div>
-                  <div
-                    className={`mt-1 text-lg font-bold ${
-                      day.isToday
-                        ? 'text-emerald-600'
-                        : 'text-gray-900'
-                    }`}
-                  >
-                    {day.dayNumber}
+                  
+                  {/* Indicator for mobile */}
+                  <div className="md:hidden flex items-center bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
+                    <span className="text-sm font-semibold text-gray-700">
+                      {dayPalestras.length} {dayPalestras.length === 1 ? 'palestra' : 'palestras'}
+                    </span>
                   </div>
                 </div>
+                
+                {onDayClick && (
+                  <button
+                    onClick={() => onDayClick(dateKey)}
+                    className="mt-3 md:mt-2 text-sm md:text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-4 md:px-3 py-2 md:py-1 rounded-lg md:rounded-full transition-colors w-full font-medium"
+                  >
+                    Ver dia
+                  </button>
+                )}
               </div>
 
-              {/* Palestras for this day */}
-              <div className="p-2 space-y-2">
+              {/* Palestras list (Hidden on mobile, only accessible via "Ver dia" button to match the card layout requirements) */}
+              <div className="hidden md:block p-2 space-y-2">
                 {dayPalestras.length === 0 ? (
                   <div className="text-center py-8 text-gray-400 text-sm">
                     Sem palestras
